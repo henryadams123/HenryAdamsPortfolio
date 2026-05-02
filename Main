@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Henry Adams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --display:'Bebas Neue','Arial Narrow',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+
+  /* DAWN palette — default starting state */
+  --bg:        #efe4d2;
+  --bg2:       #e6d8c0;
+  --bg3:       #dccbae;
+  --ink:       #2a221d;
+  --ink2:      #5a4d42;
+  --ink3:      #968873;
+  --ink4:      #c9bca6;
+  --rule:      rgba(42,34,29,0.12);
+  --rule2:     rgba(42,34,29,0.22);
+  --accent:    #c44a1f;
+  --accent2:   #e07840;
+  --amber:     #b07020;
+  --sage:      #5a7d52;
+  --transition: 1.4s cubic-bezier(.45,.05,.25,1);
+}
+
+/* DAY palette — bright, warm, midday Colorado */
+body.t-day{
+  --bg:#f5f1e8;
+  --bg2:#ebe5d6;
+  --bg3:#e0d8c4;
+  --ink:#1a1410;
+  --ink2:#4a3f35;
+  --ink3:#928572;
+  --ink4:#c8bda8;
+  --rule:rgba(26,20,16,0.1);
+  --rule2:rgba(26,20,16,0.18);
+  --accent:#9e3d1a;
+  --accent2:#c25729;
+  --amber:#a86c1e;
+  --sage:#3d5e42;
+}
+
+/* DUSK palette — golden hour into deep amber */
+body.t-dusk{
+  --bg:#3d2419;
+  --bg2:#4a2d1f;
+  --bg3:#583626;
+  --ink:#f5e6d0;
+  --ink2:#d4b894;
+  --ink3:#a08866;
+  --ink4:#6b5640;
+  --rule:rgba(245,230,208,0.13);
+  --rule2:rgba(245,230,208,0.22);
+  --accent:#f29040;
+  --accent2:#ffb060;
+  --amber:#e8a440;
+  --sage:#8aa888;
+}
+
+/* NIGHT palette — deep navy, starlight, moonlit peaks */
+body.t-night{
+  --bg:#0d1220;
+  --bg2:#141a2c;
+  --bg3:#1c2438;
+  --ink:#e8ecf5;
+  --ink2:#a8b0c5;
+  --ink3:#6b7390;
+  --ink4:#3a4360;
+  --rule:rgba(232,236,245,0.1);
+  --rule2:rgba(232,236,245,0.2);
+  --accent:#d97a3e;
+  --accent2:#f29555;
+  --amber:#c8a050;
+  --sage:#7a9a8a;
+}
+
+/* DAWN palette — pre-sunrise, pinks and lavenders */
+body.t-dawn{
+  --bg:#e8d4c5;
+  --bg2:#dfc5b3;
+  --bg3:#d4b4a0;
+  --ink:#2a1f24;
+  --ink2:#5a4248;
+  --ink3:#967a78;
+  --ink4:#c4a89c;
+  --rule:rgba(42,31,36,0.13);
+  --rule2:rgba(42,31,36,0.22);
+  --accent:#c4502a;
+  --accent2:#e07a4a;
+  --amber:#b07020;
+  --sage:#7a8a6a;
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--mono);
+  font-weight:300;
+  line-height:1.6;
+  overflow-x:hidden;
+  cursor:crosshair;
+  transition: background var(--transition), color var(--transition);
+}
+
+/* paper grain */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:1;
+  opacity:.022;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23f)'/%3E%3C/svg%3E");
+  background-size:220px;
+}
+
+::-webkit-scrollbar{width:2px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--accent)}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:600;
+  height:48px;display:flex;align-items:stretch;
+  border-bottom:1px solid var(--rule2);
+  background:color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter:blur(20px);
+  transition: background var(--transition), border-color var(--transition);
+}
+.nb{
+  display:flex;align-items:center;padding:0 2.5rem;
+  border-right:1px solid var(--rule2);
+  font-family:var(--display);font-size:1.2rem;letter-spacing:.1em;
+  color:var(--ink);text-decoration:none;white-space:nowrap;
+  transition:color var(--transition), border-color var(--transition);
+}
+.nb em{color:var(--accent);font-style:normal;transition:color var(--transition)}
+.nl{display:flex;align-items:stretch;list-style:none;margin-left:auto}
+.nl li{display:flex}
+.nl a{
+  display:flex;align-items:center;padding:0 1.25rem;
+  font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink3);text-decoration:none;border-left:1px solid var(--rule);
+  transition:color .15s,background .15s;
+}
+.nl a:hover{color:var(--ink);background:var(--bg2)}
+.n-time{
+  display:flex;align-items:center;gap:.55rem;padding:0 1.5rem;
+  border-left:1px solid var(--rule2);
+  font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink3);
+  transition:color var(--transition), border-color var(--transition);
+  min-width:140px;
+}
+.n-time-icon{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--accent);
+  transition: background var(--transition);
+  box-shadow: 0 0 12px var(--accent);
+}
+body.t-night .n-time-icon{background:var(--ink); box-shadow: 0 0 8px var(--ink2)}
+
+/* ═══ HERO with mountains ═══ */
+#hero{
+  min-height:100vh;
+  padding-top:48px;
+  position:relative;
+  display:flex;flex-direction:column;
+  border-bottom:1px solid var(--rule2);
+  overflow:hidden;
+}
+
+/* The SVG mountain stage */
+.stage{
+  position:absolute;
+  top:48px;left:0;right:0;
+  height:62vh;min-height:480px;
+  z-index:2;
+  pointer-events:none;
+  overflow:hidden;
+}
+.stage svg{display:block;width:100%;height:100%}
+
+/* Sky gradient — uses palette vars */
+.sky-day { stop-color:#e8d4a8 }
+.sky-day2{ stop-color:#f5e6c0 }
+
+.hero-body{
+  position:relative;z-index:5;
+  flex:1;
+  display:grid;grid-template-columns:1fr 420px;
+  margin-top:42vh;
+}
+
+.hero-l{
+  padding:5rem 5rem 4rem;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  border-right:1px solid var(--rule2);
+  background:color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter:blur(8px);
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.h-eyebrow{
+  font-family:var(--mono);
+  font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:2.5rem;
+  display:flex;align-items:center;gap:1.25rem;
+  transition:color var(--transition);
+}
+.h-eyebrow::before{
+  content:'';width:36px;height:1px;background:var(--accent);
+  transition:background var(--transition);
+}
+
+.h-name{
+  font-family:var(--display);
+  font-size:clamp(5.5rem,10vw,9.5rem);
+  line-height:.86;letter-spacing:.015em;
+  color:var(--ink);margin-bottom:3rem;
+  transition:color var(--transition);
+}
+.h-name .sur{color:var(--accent);display:block;transition:color var(--transition)}
+
+.h-text{
+  font-family:var(--serif);
+  font-size:1.2rem;font-weight:300;font-style:italic;
+  color:var(--ink2);line-height:1.95;max-width:540px;
+  margin-bottom:3rem;
+  padding-left:1.5rem;
+  border-left:1px solid var(--accent);
+  transition:color var(--transition), border-color var(--transition);
+}
+
+.h-actions{display:flex;gap:.75rem;flex-wrap:wrap}
+
+.btn{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  padding:.8rem 1.75rem;text-decoration:none;display:inline-block;
+  border:1px solid var(--rule2);color:var(--ink);
+  transition:all .25s, border-color var(--transition);
+  cursor:crosshair;background:transparent;
+}
+.btn:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn-acc{background:var(--accent);border-color:var(--accent);color:#f5e6d0}
+.btn-acc:hover{background:transparent;color:var(--accent);border-color:var(--accent)}
+
+.hero-r{
+  display:flex;flex-direction:column;
+  background:color-mix(in srgb, var(--bg2) 92%, transparent);
+  backdrop-filter:blur(8px);
+  transition:background var(--transition);
+}
+.h-stat{
+  flex:1;padding:2.25rem 2.75rem;
+  border-bottom:1px solid var(--rule);
+  display:flex;flex-direction:column;justify-content:flex-end;
+  transition:border-color var(--transition);
+}
+.h-stat:last-child{border-bottom:none}
+.h-stat-idx{
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--ink4);margin-bottom:auto;
+  transition:color var(--transition);
+}
+.h-stat-num{
+  font-family:var(--display);
+  font-size:2.8rem;line-height:1;letter-spacing:.04em;
+  color:var(--ink);margin-top:1.5rem;margin-bottom:.35rem;
+  transition:color var(--transition);
+}
+.h-stat-num.acc{color:var(--accent)}
+.h-stat-label{
+  font-family:var(--mono);font-size:.55rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink3);
+  transition:color var(--transition);
+}
+
+/* ticker */
+.ticker{
+  border-top:1px solid var(--rule2);padding:.65rem 0;
+  overflow:hidden;background:var(--bg3);flex-shrink:0;
+  position:relative;z-index:5;
+  transition:background var(--transition), border-color var(--transition);
+}
+.ticker-track{
+  display:flex;gap:3rem;white-space:nowrap;
+  animation:tick 32s linear infinite;
+}
+.ticker-track:hover{animation-play-state:paused}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ti{
+  display:flex;align-items:center;gap:.65rem;flex-shrink:0;
+  font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);
+  transition:color var(--transition);
+}
+.ti-dot{width:3px;height:3px;border-radius:50%;background:var(--accent);flex-shrink:0;transition:background var(--transition)}
+
+/* ── SECTIONS ── */
+section{position:relative;z-index:10;transition:background var(--transition)}
+
+.s-top{
+  display:grid;grid-template-columns:64px 1fr auto;
+  align-items:center;min-height:56px;
+  border-bottom:1px solid var(--rule2);
+  transition:border-color var(--transition);
+}
+.s-n{
+  display:flex;align-items:center;justify-content:center;height:100%;
+  border-right:1px solid var(--rule2);
+  font-family:var(--mono);font-size:.52rem;letter-spacing:.16em;color:var(--accent);
+  padding:.75rem 0;
+  transition:color var(--transition), border-color var(--transition);
+}
+.s-h{
+  font-family:var(--display);font-size:2rem;letter-spacing:.08em;
+  color:var(--ink);padding:0 2rem;
+  transition:color var(--transition);
+}
+.s-tag{
+  padding:0 2rem;font-family:var(--mono);
+  font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink4);
+  transition:color var(--transition);
+}
+
+/* ── ABOUT ── */
+#about{border-bottom:1px solid var(--rule2)}
+
+.about-wrap{display:grid;grid-template-columns:1fr 300px}
+
+.about-body{
+  padding:5rem;border-right:1px solid var(--rule2);
+  transition:border-color var(--transition);
+}
+.about-body p{
+  font-family:var(--serif);font-size:1.1rem;font-weight:300;
+  color:var(--ink2);line-height:2.05;margin-bottom:1.6rem;
+  transition:color var(--transition);
+}
+.about-body p strong{color:var(--ink);font-weight:500;transition:color var(--transition)}
+
+.pull-quote{
+  font-family:var(--display);
+  font-size:clamp(2.2rem,4vw,3rem);
+  letter-spacing:.05em;color:var(--accent);
+  line-height:1.05;margin:3rem 0;
+  transition:color var(--transition);
+}
+
+.about-side{background:var(--bg2);transition:background var(--transition)}
+.as-row{padding:1.75rem 1.85rem;border-bottom:1px solid var(--rule);transition:border-color var(--transition)}
+.as-row:last-child{border-bottom:none}
+.as-lbl{
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.7rem;
+  transition:color var(--transition);
+}
+.as-val{
+  font-family:var(--serif);font-size:1rem;font-weight:300;
+  color:var(--ink2);line-height:1.75;
+  transition:color var(--transition);
+}
+.as-val strong{
+  display:block;font-family:var(--mono);font-size:.7rem;font-weight:400;
+  color:var(--ink);margin-bottom:.2rem;letter-spacing:.02em;
+  transition:color var(--transition);
+}
+
+/* ── PROJECTS ── */
+#projects{border-bottom:1px solid var(--rule2)}
+
+.proj-grid{display:grid;grid-template-columns:1fr 1fr}
+
+.pc{
+  display:block;padding:3rem 3.5rem;
+  text-decoration:none;color:inherit;
+  border-right:1px solid var(--rule2);
+  border-bottom:1px solid var(--rule2);
+  position:relative;overflow:hidden;
+  transition:background .3s, border-color var(--transition);
+}
+.pc:nth-child(even){border-right:none}
+.pc:nth-last-child(-n+2){border-bottom:none}
+.pc::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--accent);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .45s ease, background var(--transition);
+}
+.pc:hover{background:var(--bg2)}
+.pc:hover::before{transform:scaleX(1)}
+
+.pc-idx{
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:1.25rem;
+  transition:color var(--transition);
+}
+.pc-title{
+  font-family:var(--display);
+  font-size:clamp(1.7rem,2.6vw,2.2rem);
+  letter-spacing:.04em;color:var(--ink);
+  line-height:1;margin-bottom:1.25rem;
+  transition:color var(--transition);
+}
+.pc-desc{
+  font-family:var(--serif);font-size:1.02rem;font-weight:300;
+  color:var(--ink2);line-height:1.95;margin-bottom:1.75rem;
+  transition:color var(--transition);
+}
+.pc-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.25rem}
+.pc-tag{
+  font-family:var(--mono);font-size:.48rem;letter-spacing:.14em;
+  text-transform:uppercase;padding:.25rem .6rem;
+  border:1px solid var(--ink4);color:var(--ink3);
+  transition:border-color var(--transition), color var(--transition);
+}
+.pc-status{
+  font-family:var(--mono);font-size:.52rem;letter-spacing:.16em;
+  text-transform:uppercase;display:flex;align-items:center;gap:.45rem;
+}
+.pc-status::before{content:'';width:4px;height:4px;border-radius:50%;background:currentColor}
+.pc-status.live{color:var(--sage)}
+.pc-status.wip{color:var(--amber)}
+
+/* ── EXPERIENCE ── */
+#experience{border-bottom:1px solid var(--rule2)}
+
+.exp-item{
+  display:grid;grid-template-columns:200px 1fr;
+  border-bottom:1px solid var(--rule);
+  transition:background .25s, border-color var(--transition);
+}
+.exp-item:hover{background:var(--bg2)}
+.exp-item:last-child{border-bottom:none}
+
+.exp-l{padding:2.75rem 2.25rem;border-right:1px solid var(--rule2);transition:border-color var(--transition)}
+.exp-period{
+  font-family:var(--mono);font-size:.55rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.45rem;
+  transition:color var(--transition);
+}
+.exp-co{
+  font-family:var(--serif);font-size:.95rem;font-weight:300;
+  color:var(--ink2);line-height:1.6;
+  transition:color var(--transition);
+}
+
+.exp-r{padding:2.75rem 3.5rem}
+.exp-role{
+  font-family:var(--display);font-size:1.45rem;letter-spacing:.05em;
+  color:var(--ink);margin-bottom:.85rem;
+  transition:color var(--transition);
+}
+.exp-desc{
+  font-family:var(--serif);font-size:1rem;font-weight:300;
+  color:var(--ink2);line-height:1.95;
+  transition:color var(--transition);
+}
+
+/* ── SKILLS ── */
+#skills{border-bottom:1px solid var(--rule2)}
+
+.skills-wrap{display:grid;grid-template-columns:repeat(3,1fr)}
+.sk-col{padding:2.75rem;border-right:1px solid var(--rule2);transition:border-color var(--transition)}
+.sk-col:last-child{border-right:none}
+
+.sk-head{
+  font-family:var(--mono);font-size:.52rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--accent);
+  padding-bottom:.85rem;margin-bottom:1.6rem;
+  border-bottom:1px solid var(--rule2);
+  transition:color var(--transition), border-color var(--transition);
+}
+.sk-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.55rem 0;border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-size:.68rem;color:var(--ink2);
+  transition:color var(--transition), border-color var(--transition);
+}
+.sk-row:last-child{border-bottom:none}
+.sk-bar{width:48px;height:1px;background:var(--ink4);position:relative;flex-shrink:0;transition:background var(--transition)}
+.sk-fill{position:absolute;left:0;top:0;bottom:0;background:var(--accent);transition:background var(--transition)}
+.sk-fill.learning{background:var(--amber)}
+
+/* ── CONTACT ── */
+#contact{border-bottom:none}
+
+.contact-wrap{display:grid;grid-template-columns:1fr 380px;min-height:480px}
+.contact-l{
+  padding:5rem 4.5rem;border-right:1px solid var(--rule2);
+  display:flex;flex-direction:column;justify-content:center;
+  transition:border-color var(--transition);
+}
+.contact-h{
+  font-family:var(--display);
+  font-size:clamp(4rem,8.5vw,7rem);
+  line-height:.86;letter-spacing:.03em;
+  color:var(--ink);margin-bottom:2.5rem;
+  transition:color var(--transition);
+}
+.contact-h span{color:var(--accent);display:block;transition:color var(--transition)}
+.contact-sub{
+  font-family:var(--serif);font-size:1.08rem;font-weight:300;
+  color:var(--ink2);line-height:1.95;max-width:440px;
+  transition:color var(--transition);
+}
+
+.contact-r{background:var(--bg2);display:flex;flex-direction:column;transition:background var(--transition)}
+.cl{
+  flex:1;display:flex;align-items:center;justify-content:space-between;
+  padding:0 2.5rem;border-bottom:1px solid var(--rule);
+  text-decoration:none;color:inherit;
+  transition:background .15s, border-color var(--transition);
+  cursor:crosshair;
+}
+.cl:last-child{border-bottom:none}
+.cl:hover{background:var(--bg3)}
+.cl-lbl{
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink3);margin-bottom:.35rem;
+  transition:color var(--transition);
+}
+.cl-val{font-family:var(--serif);font-size:1.05rem;font-weight:300;color:var(--ink);transition:color var(--transition)}
+.cl-arr{font-family:var(--mono);font-size:.85rem;color:var(--accent);transition:color var(--transition)}
+
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid var(--rule2);padding:1.1rem 2.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg2);
+  transition:background var(--transition), border-color var(--transition);
+}
+footer p{
+  font-family:var(--mono);font-size:.52rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);
+  transition:color var(--transition);
+}
+
+/* ── REVEAL ── */
+.rev{opacity:0;transform:translateY(28px);transition:opacity .85s ease,transform .85s ease}
+.rev.in{opacity:1;transform:none}
+.rev.d1{transition-delay:.12s}
+.rev.d2{transition-delay:.24s}
+
+/* ── MOUNTAIN LAYERS ── */
+/* Each layer fades between time states via SVG opacity */
+.layer{transition:opacity var(--transition)}
+
+/* SUN / MOON */
+.celestial{transition:opacity var(--transition), transform var(--transition)}
+
+/* STARS — only visible at night */
+.stars{opacity:0;transition:opacity var(--transition)}
+body.t-night .stars{opacity:.85}
+body.t-dusk .stars{opacity:.25}
+body.t-dawn .stars{opacity:.15}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .nl{display:none}
+  .stage{height:50vh;min-height:340px}
+  .hero-body{grid-template-columns:1fr;margin-top:36vh}
+  .hero-l{padding:2.5rem 1.5rem 2rem;border-right:none}
+  .h-name{font-size:clamp(4.5rem,17vw,7.5rem)}
+  .hero-r{border-top:1px solid var(--rule2);flex-direction:row;flex-wrap:wrap}
+  .h-stat{flex:1 1 45%;border-right:1px solid var(--rule2);padding:1.5rem 1.25rem}
+  .h-stat-num{font-size:2rem}
+  .s-top{grid-template-columns:48px 1fr}
+  .s-tag{display:none}
+  .about-wrap{grid-template-columns:1fr}
+  .about-body{padding:2.5rem 1.5rem;border-right:none}
+  .about-side{border-top:1px solid var(--rule2)}
+  .proj-grid{grid-template-columns:1fr}
+  .pc{border-right:none !important;border-bottom:1px solid var(--rule2) !important;padding:2.5rem 1.5rem}
+  .pc:last-child{border-bottom:none !important}
+  .exp-item{grid-template-columns:1fr}
+  .exp-l{border-right:none;padding:1.75rem 1.5rem .5rem}
+  .exp-r{padding:.5rem 1.5rem 1.75rem}
+  .skills-wrap{grid-template-columns:1fr}
+  .sk-col{border-right:none;border-bottom:1px solid var(--rule2)}
+  .sk-col:last-child{border-bottom:none}
+  .contact-wrap{grid-template-columns:1fr}
+  .contact-l{border-right:none;padding:3rem 1.5rem}
+  footer{flex-direction:column;gap:.5rem;text-align:center}
+}
+</style>
+</head>
+<body class="t-dawn">
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <a href="#hero" class="nb">H<em>.</em>ADAMS</a>
+  <ul class="nl">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="n-time">
+    <div class="n-time-icon"></div>
+    <span id="time-label">Dawn</span>
+  </div>
+</nav>
+
+<!-- ═══ HERO with mountain stage ═══ -->
+<section id="hero" data-time="dawn">
+
+  <!-- MOUNTAIN STAGE -->
+  <div class="stage">
+    <svg viewBox="0 0 1600 700" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+
+        <!-- DAWN sky gradient -->
+        <linearGradient id="sky-dawn" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#3d2848"/>
+          <stop offset="35%" stop-color="#a85e5e"/>
+          <stop offset="70%" stop-color="#e8a574"/>
+          <stop offset="100%" stop-color="#f5d098"/>
+        </linearGradient>
+
+        <!-- DAY sky gradient -->
+        <linearGradient id="sky-day" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#5a8bc0"/>
+          <stop offset="60%" stop-color="#a8c8e0"/>
+          <stop offset="100%" stop-color="#e0d8b8"/>
+        </linearGradient>
+
+        <!-- DUSK sky gradient -->
+        <linearGradient id="sky-dusk" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#1a1838"/>
+          <stop offset="40%" stop-color="#5e3a5e"/>
+          <stop offset="75%" stop-color="#c25e2a"/>
+          <stop offset="100%" stop-color="#f0a040"/>
+        </linearGradient>
+
+        <!-- NIGHT sky gradient -->
+        <linearGradient id="sky-night" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#050816"/>
+          <stop offset="50%" stop-color="#0d1430"/>
+          <stop offset="100%" stop-color="#1a2042"/>
+        </linearGradient>
+
+        <!-- Sun glow -->
+        <radialGradient id="sun-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#fff5d8" stop-opacity="1"/>
+          <stop offset="40%" stop-color="#f5d488" stop-opacity=".55"/>
+          <stop offset="100%" stop-color="#f0a040" stop-opacity="0"/>
+        </radialGradient>
+
+        <!-- Moon glow -->
+        <radialGradient id="moon-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#e8ecf5" stop-opacity="1"/>
+          <stop offset="50%" stop-color="#a8b0c5" stop-opacity=".4"/>
+          <stop offset="100%" stop-color="#1a2042" stop-opacity="0"/>
+        </radialGradient>
+
+      </defs>
+
+      <!-- SKY LAYERS — all stacked, opacity controlled by body class -->
+      <rect class="layer sky-dawn-rect" width="1600" height="700" fill="url(#sky-dawn)"/>
+      <rect class="layer sky-day-rect" width="1600" height="700" fill="url(#sky-day)"/>
+      <rect class="layer sky-dusk-rect" width="1600" height="700" fill="url(#sky-dusk)"/>
+      <rect class="layer sky-night-rect" width="1600" height="700" fill="url(#sky-night)"/>
+
+      <!-- STARS (visible at night) -->
+      <g class="stars">
+        <circle cx="120" cy="80" r="1" fill="#fff" opacity=".9"/>
+        <circle cx="240" cy="140" r="1.2" fill="#fff" opacity=".7"/>
+        <circle cx="380" cy="60" r=".8" fill="#fff" opacity="1"/>
+        <circle cx="520" cy="180" r="1" fill="#fff" opacity=".6"/>
+        <circle cx="660" cy="100" r="1.4" fill="#fff" opacity=".95"/>
+        <circle cx="780" cy="220" r=".9" fill="#fff" opacity=".7"/>
+        <circle cx="920" cy="60" r="1.1" fill="#fff" opacity=".85"/>
+        <circle cx="1060" cy="160" r=".7" fill="#fff" opacity=".75"/>
+        <circle cx="1200" cy="80" r="1.3" fill="#fff" opacity="1"/>
+        <circle cx="1340" cy="200" r=".9" fill="#fff" opacity=".6"/>
+        <circle cx="1480" cy="120" r="1" fill="#fff" opacity=".8"/>
+        <circle cx="180" cy="240" r=".8" fill="#fff" opacity=".7"/>
+        <circle cx="440" cy="280" r="1.1" fill="#fff" opacity=".5"/>
+        <circle cx="720" cy="40" r=".9" fill="#fff" opacity=".9"/>
+        <circle cx="1140" cy="240" r=".8" fill="#fff" opacity=".65"/>
+        <circle cx="1380" cy="40" r="1.2" fill="#fff" opacity=".85"/>
+        <circle cx="60" cy="160" r=".7" fill="#fff" opacity=".7"/>
+        <circle cx="320" cy="220" r="1" fill="#fff" opacity=".8"/>
+        <circle cx="600" cy="280" r=".8" fill="#fff" opacity=".55"/>
+        <circle cx="860" cy="120" r="1.1" fill="#fff" opacity=".9"/>
+        <circle cx="1280" cy="280" r=".9" fill="#fff" opacity=".7"/>
+      </g>
+
+      <!-- SUN — visible in dawn/day/dusk -->
+      <g class="celestial sun">
+        <circle cx="1200" cy="200" r="80" fill="url(#sun-glow)"/>
+        <circle cx="1200" cy="200" r="32" fill="#fff5d8"/>
+      </g>
+
+      <!-- MOON — visible at night/dusk -->
+      <g class="celestial moon">
+        <circle cx="350" cy="160" r="60" fill="url(#moon-glow)"/>
+        <circle cx="350" cy="160" r="26" fill="#e8ecf5"/>
+        <circle cx="343" cy="155" r="3" fill="#a8b0c5" opacity=".5"/>
+        <circle cx="358" cy="166" r="2" fill="#a8b0c5" opacity=".4"/>
+        <circle cx="355" cy="148" r="2.5" fill="#a8b0c5" opacity=".5"/>
+      </g>
+
+      <!-- ─── MOUNTAINS — back layer (most distant) ─── -->
+      <g class="layer mtn-back">
+        <path d="M 0 700 L 0 460 L 80 380 L 140 420 L 220 320 L 290 380 L 380 280 L 460 360 L 560 240 L 640 320 L 740 220 L 820 300 L 920 200 L 1010 290 L 1100 220 L 1190 280 L 1290 200 L 1380 270 L 1470 230 L 1560 290 L 1600 260 L 1600 700 Z"
+              class="mtn-back-fill"/>
+      </g>
+
+      <!-- ─── MOUNTAINS — mid layer ─── -->
+      <g class="layer mtn-mid">
+        <path d="M 0 700 L 0 540 L 60 480 L 130 520 L 220 400 L 320 460 L 410 360 L 500 440 L 600 340 L 690 410 L 780 320 L 880 390 L 970 310 L 1080 380 L 1180 300 L 1290 370 L 1390 320 L 1500 390 L 1600 350 L 1600 700 Z"
+              class="mtn-mid-fill"/>
+        <!-- snow caps -->
+        <path d="M 220 400 L 245 425 L 280 415 L 250 430 L 220 400 Z M 410 360 L 435 385 L 470 375 L 440 395 L 410 360 Z M 600 340 L 625 365 L 660 355 L 630 375 L 600 340 Z M 780 320 L 805 345 L 840 335 L 810 355 L 780 320 Z M 970 310 L 995 335 L 1030 325 L 1000 345 L 970 310 Z M 1180 300 L 1205 325 L 1240 315 L 1210 335 L 1180 300 Z M 1390 320 L 1415 345 L 1450 335 L 1420 355 L 1390 320 Z"
+              class="snow-fill"/>
+      </g>
+
+      <!-- ─── MOUNTAINS — front layer (closest) ─── -->
+      <g class="layer mtn-front">
+        <path d="M 0 700 L 0 620 L 80 560 L 180 590 L 260 480 L 360 540 L 450 440 L 560 510 L 660 420 L 770 490 L 870 410 L 980 480 L 1080 400 L 1190 470 L 1290 410 L 1400 480 L 1500 430 L 1600 490 L 1600 700 Z"
+              class="mtn-front-fill"/>
+      </g>
+
+      <!-- Foreground tree silhouettes — bottom right -->
+      <g class="layer trees" opacity=".85">
+        <path d="M 1480 700 L 1480 640 L 1475 640 L 1485 615 L 1480 615 L 1490 590 L 1495 615 L 1490 615 L 1500 640 L 1495 640 L 1495 700 Z" class="tree-fill"/>
+        <path d="M 1520 700 L 1520 660 L 1516 660 L 1524 640 L 1521 640 L 1527 620 L 1530 640 L 1527 640 L 1535 660 L 1531 660 L 1531 700 Z" class="tree-fill"/>
+        <path d="M 1550 700 L 1550 650 L 1545 650 L 1553 625 L 1550 625 L 1558 600 L 1562 625 L 1558 625 L 1567 650 L 1562 650 L 1562 700 Z" class="tree-fill"/>
+      </g>
+
+    </svg>
+  </div>
+
+  <!-- HERO BODY -->
+  <div class="hero-body">
+
+    <div class="hero-l">
+      <div class="h-eyebrow">Analyst &mdash; Denver, CO &mdash; Open to remote</div>
+      <h1 class="h-name">
+        HENRY
+        <span class="sur">ADAMS</span>
+      </h1>
+      <p class="h-text">
+        Economics. Engineering. Eight projects that prove it.<br>
+        I've incubated deep-tech startups on a trading floor in Sydney<br>
+        and skied into places most people only see on maps.<br>
+        I show up ready. The models run. The work speaks.
+      </p>
+      <div class="h-actions">
+        <a href="#projects" class="btn btn-acc">View the work &rarr;</a>
+        <a href="#" class="btn">Resume</a>
+        <a href="https://linkedin.com/in/" target="_blank" class="btn">LinkedIn</a>
+        <a href="https://github.com/" target="_blank" class="btn">GitHub</a>
+      </div>
+    </div>
+
+    <div class="hero-r">
+      <div class="h-stat">
+        <div class="h-stat-idx">01 &mdash; Projects</div>
+        <div class="h-stat-num acc">08</div>
+        <div class="h-stat-label">Portfolio &mdash; all functional</div>
+      </div>
+      <div class="h-stat">
+        <div class="h-stat-idx">02 &mdash; Degree</div>
+        <div class="h-stat-num">B.S.</div>
+        <div class="h-stat-label">Economics &mdash; U of Oregon</div>
+      </div>
+      <div class="h-stat">
+        <div class="h-stat-idx">03 &mdash; Graduate</div>
+        <div class="h-stat-num">M.Eng.</div>
+        <div class="h-stat-label">CU Boulder &mdash; Eng. Mgmt</div>
+      </div>
+      <div class="h-stat">
+        <div class="h-stat-idx">04 &mdash; Experience</div>
+        <div class="h-stat-num">RFC</div>
+        <div class="h-stat-label">Ambrian &mdash; Sydney, AU</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="ticker">
+    <div class="ticker-track">
+      <div class="ti"><span class="ti-dot"></span>Monte Carlo Simulation</div>
+      <div class="ti"><span class="ti-dot"></span>Portfolio Risk Model</div>
+      <div class="ti"><span class="ti-dot"></span>Reverse DCF</div>
+      <div class="ti"><span class="ti-dot"></span>Comparable Company Analysis</div>
+      <div class="ti"><span class="ti-dot"></span>Supply Chain Forecast</div>
+      <div class="ti"><span class="ti-dot"></span>Clean Energy Markets</div>
+      <div class="ti"><span class="ti-dot"></span>Angrist &amp; Lavy Replication</div>
+      <div class="ti"><span class="ti-dot"></span>Current Conditions iOS</div>
+      <div class="ti"><span class="ti-dot"></span>Monte Carlo Simulation</div>
+      <div class="ti"><span class="ti-dot"></span>Portfolio Risk Model</div>
+      <div class="ti"><span class="ti-dot"></span>Reverse DCF</div>
+      <div class="ti"><span class="ti-dot"></span>Comparable Company Analysis</div>
+      <div class="ti"><span class="ti-dot"></span>Supply Chain Forecast</div>
+      <div class="ti"><span class="ti-dot"></span>Clean Energy Markets</div>
+      <div class="ti"><span class="ti-dot"></span>Angrist &amp; Lavy Replication</div>
+      <div class="ti"><span class="ti-dot"></span>Current Conditions iOS</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT — DAY ═══ -->
+<section id="about" data-time="day">
+  <div class="s-top rev">
+    <div class="s-n">01</div>
+    <div class="s-h">ABOUT</div>
+    <div class="s-tag">Henry_Adams.bio</div>
+  </div>
+  <div class="about-wrap">
+    <div class="about-body rev">
+      <p>I'm an economics graduate from the University of Oregon — minor in entrepreneurship — currently completing a <strong>Master of Engineering in Engineering Management at CU Boulder</strong> through the Lockheed Martin Engineering Management Program.</p>
+      <p>Before grad school I was at <strong>RFC Ambrian in Sydney</strong>, deep inside a clean energy and deep-tech startup incubator. I built ecosystem frameworks, sourced and evaluated startups, and shaped the full incubation pipeline from formation through graduation. Real work. Real stakes.</p>
+      <div class="pull-quote">EIGHT PROJECTS.<br>ZERO EXCUSES.</div>
+      <p>The models on this site span quant finance, ops, energy markets, and product — because the roles I'm targeting require that range. Everything here is functional, documented, and deployed. Not a mock-up. Not a slide deck.</p>
+      <p>Outside of work I race alpine ski competitively and spend a lot of time in Colorado's backcountry. I know how to read terrain, commit to a line, and execute under pressure. That transfers.</p>
+    </div>
+    <div class="about-side rev d1">
+      <div class="as-row">
+        <div class="as-lbl">Education</div>
+        <div class="as-val"><strong>M.Eng. Engineering Management</strong>CU Boulder &middot; 2026&ndash;2028<br>Lockheed Martin Program</div>
+      </div>
+      <div class="as-row">
+        <div class="as-val"><strong>B.S. Economics</strong>U of Oregon &middot; 2025<br>Minor: Entrepreneurship</div>
+      </div>
+      <div class="as-row">
+        <div class="as-lbl">Targeting</div>
+        <div class="as-val">Analyst &middot; Coordinator<br>Operations &middot; Finance<br><br>Denver &mdash; Remote &mdash; Relocation</div>
+      </div>
+      <div class="as-row">
+        <div class="as-lbl">Building now</div>
+        <div class="as-val">Monte Carlo simulator<br>Portfolio risk model<br>Clean energy dashboard<br>iOS conditions app</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROJECTS — DUSK ═══ -->
+<section id="projects" data-time="dusk">
+  <div class="s-top rev">
+    <div class="s-n">02</div>
+    <div class="s-h">PROJECTS</div>
+    <div class="s-tag">08 total &mdash; all functional</div>
+  </div>
+  <div class="proj-grid">
+
+    <a href="#" class="pc rev">
+      <div class="pc-idx">01 &mdash; Quant Finance</div>
+      <div class="pc-title">MONTE CARLO<br>SIMULATOR</div>
+      <div class="pc-desc">1,000&ndash;10,000 equity price paths via geometric Brownian motion. Value at Risk, expected return, worst-case drawdown, full return distribution. Live interactive tool.</div>
+      <div class="pc-tags"><span class="pc-tag">GBM</span><span class="pc-tag">VaR</span><span class="pc-tag">React</span><span class="pc-tag">Risk</span></div>
+      <div class="pc-status wip">In progress</div>
+    </a>
+
+    <a href="#" class="pc rev d1">
+      <div class="pc-idx">02 &mdash; Portfolio Risk</div>
+      <div class="pc-title">PORTFOLIO<br>RISK MODEL</div>
+      <div class="pc-desc">Return, volatility, correlation, beta, Sharpe ratio, max drawdown across a multi-asset portfolio. Built the way asset management professionals actually use it.</div>
+      <div class="pc-tags"><span class="pc-tag">Sharpe</span><span class="pc-tag">Beta</span><span class="pc-tag">Drawdown</span><span class="pc-tag">Vol</span></div>
+      <div class="pc-status wip">In progress</div>
+    </a>
+
+    <a href="#" class="pc rev">
+      <div class="pc-idx">03 &mdash; Valuation</div>
+      <div class="pc-title">REVERSE<br>DCF MODEL</div>
+      <div class="pc-desc">What growth rate must a company hit to justify its price? Revenue CAGR, FCF margin, WACC, terminal growth, implied upside/downside. Valuation made testable.</div>
+      <div class="pc-tags"><span class="pc-tag">DCF</span><span class="pc-tag">WACC</span><span class="pc-tag">FCF</span><span class="pc-tag">Valuation</span></div>
+      <div class="pc-status wip">In progress</div>
+    </a>
+
+    <a href="#" class="pc rev d1">
+      <div class="pc-idx">04 &mdash; Peer Benchmarking</div>
+      <div class="pc-title">COMPARABLE<br>COMPANY ANALYSIS</div>
+      <div class="pc-desc">EV/Revenue, EV/EBITDA, P/E, FCF yield across 5&ndash;10 public peers. Peer-group medians, percentile ranges, premium/discount analysis. Pitch-book ready.</div>
+      <div class="pc-tags"><span class="pc-tag">Comps</span><span class="pc-tag">EV/EBITDA</span><span class="pc-tag">P/E</span><span class="pc-tag">IB</span></div>
+      <div class="pc-status wip">In progress</div>
+    </a>
+
+    <a href="#" class="pc rev">
+      <div class="pc-idx">05 &mdash; Operations</div>
+      <div class="pc-title">SUPPLY CHAIN<br>DEMAND FORECAST</div>
+      <div class="pc-desc">SKU-level demand variability, reorder points, safety stock, stockout risk across scenarios. Built to demonstrate ops and supply chain analyst competency.</div>
+      <div class="pc-tags"><span class="pc-tag">Supply Chain</span><span class="pc-tag">Forecast</span><span class="pc-tag">Simulation</span></div>
+      <div class="pc-status wip">In progress</div>
+    </a>
+
+    <a href="#" class="pc rev d1">
+      <div class="pc-idx">06 &mdash; Energy Markets</div>
+      <div class="pc-title">CLEAN ENERGY<br>MARKET ANALYSIS</div>
+      <div class="pc-desc">Interactive visualization on real NREL and EIA datasets. Renewable capacity growth, cost curves, regional deployment. Informed directly by RFC Ambrian incubator work.</div>
+      <div class="pc-tags"><span class="pc-tag">NREL</span><span class="pc-tag">EIA</span><span class="pc-tag">D3.js</span><span class="pc-tag">Energy</span></div>
+      <div class="pc-status wip">In progress</div>
+    </a>
+
+    <a href="#" class="pc rev">
+      <div class="pc-idx">07 &mdash; Econ Research</div>
+      <div class="pc-title">ANGRIST &amp; LAVY<br>REPLICATION</div>
+      <div class="pc-desc">Regression discontinuity replication of the landmark 1999 class-size study in R. Clean code, documented outputs, written analysis of what the data shows — and where it breaks.</div>
+      <div class="pc-tags"><span class="pc-tag">R</span><span class="pc-tag">RDD</span><span class="pc-tag">Econometrics</span></div>
+      <div class="pc-status wip">In progress</div>
+    </a>
+
+    <a href="#" class="pc rev d1">
+      <div class="pc-idx">08 &mdash; Product / Mobile</div>
+      <div class="pc-title">CURRENT<br>CONDITIONS</div>
+      <div class="pc-desc">iOS platform for technical outdoor activities — skiing, mountaineering, hiking. Real-time summit and route conditions. Sign in with Apple, Google auth, persistent login.</div>
+      <div class="pc-tags"><span class="pc-tag">iOS</span><span class="pc-tag">Swift</span><span class="pc-tag">Firebase</span><span class="pc-tag">Product</span></div>
+      <div class="pc-status wip">In progress</div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ═══ EXPERIENCE — NIGHT ═══ -->
+<section id="experience" data-time="night">
+  <div class="s-top rev">
+    <div class="s-n">03</div>
+    <div class="s-h">EXPERIENCE</div>
+    <div class="s-tag">Professional_record.log</div>
+  </div>
+
+  <div class="exp-item rev">
+    <div class="exp-l">
+      <div class="exp-period">2024 &mdash; 2025</div>
+      <div class="exp-co">RFC Ambrian<br>Sydney, AU</div>
+    </div>
+    <div class="exp-r">
+      <div class="exp-role">CLEAN ENERGY INCUBATOR &mdash; ANALYST</div>
+      <div class="exp-desc">Worked inside a clean energy and deep-tech startup incubator at RFC Ambrian's Sydney office. Built ecosystem frameworks, sourced and evaluated early-stage startups, and shaped the full incubation pipeline from formation and sourcing through onboarding, incubation, validation, and graduation. Hands-on exposure to deal flow, founder diligence, and investment thesis development.</div>
+    </div>
+  </div>
+
+  <div class="exp-item rev">
+    <div class="exp-l">
+      <div class="exp-period">2023 &mdash; 2025</div>
+      <div class="exp-co">U of Oregon<br>Collegiate Ski Team</div>
+    </div>
+    <div class="exp-r">
+      <div class="exp-role">PRESIDENT &mdash; COLLEGIATE SKI TEAM</div>
+      <div class="exp-desc">Led a competitive team of ~20 athletes over two years. Coordinated with USCSA for racing, travel, and eligibility. Handled budgeting, communications, and logistics for multi-day race weekends. Leading people who don't have to follow you is the only kind of leadership that matters.</div>
+    </div>
+  </div>
+
+  <div class="exp-item rev">
+    <div class="exp-l">
+      <div class="exp-period">2021 &mdash; 2025</div>
+      <div class="exp-co">University of Oregon<br>Eugene, OR</div>
+    </div>
+    <div class="exp-r">
+      <div class="exp-role">B.S. ECONOMICS &mdash; MINOR: ENTREPRENEURSHIP</div>
+      <div class="exp-desc">Econometrics and empirical methods in R. Policy analysis, comparative political economy, and quantitative modeling. Original research replicating Angrist &amp; Lavy (1999). Policy case studies on Brexit economic outcomes and Las Vegas economic diversification. The foundation everything else here runs on.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SKILLS — DAWN ═══ -->
+<section id="skills" data-time="dawn">
+  <div class="s-top rev">
+    <div class="s-n">04</div>
+    <div class="s-h">SKILLS</div>
+    <div class="s-tag">Competency_matrix.csv</div>
+  </div>
+  <div class="skills-wrap">
+    <div class="sk-col rev">
+      <div class="sk-head">Finance &amp; Modeling</div>
+      <div class="sk-row">Financial modeling<div class="sk-bar"><div class="sk-fill" style="width:85%"></div></div></div>
+      <div class="sk-row">DCF / Valuation<div class="sk-bar"><div class="sk-fill" style="width:80%"></div></div></div>
+      <div class="sk-row">Risk analysis<div class="sk-bar"><div class="sk-fill" style="width:78%"></div></div></div>
+      <div class="sk-row">Monte Carlo<div class="sk-bar"><div class="sk-fill" style="width:74%"></div></div></div>
+      <div class="sk-row">Excel / Sheets<div class="sk-bar"><div class="sk-fill" style="width:90%"></div></div></div>
+    </div>
+    <div class="sk-col rev d1">
+      <div class="sk-head">Technical</div>
+      <div class="sk-row">Python<div class="sk-bar"><div class="sk-fill" style="width:72%"></div></div></div>
+      <div class="sk-row">R / Econometrics<div class="sk-bar"><div class="sk-fill" style="width:80%"></div></div></div>
+      <div class="sk-row">SQL (learning)<div class="sk-bar"><div class="sk-fill learning" style="width:40%"></div></div></div>
+      <div class="sk-row">React / JS<div class="sk-bar"><div class="sk-fill" style="width:65%"></div></div></div>
+      <div class="sk-row">Swift / iOS<div class="sk-bar"><div class="sk-fill learning" style="width:50%"></div></div></div>
+    </div>
+    <div class="sk-col rev d2">
+      <div class="sk-head">Domain</div>
+      <div class="sk-row">Ops &amp; Supply Chain<div class="sk-bar"><div class="sk-fill" style="width:70%"></div></div></div>
+      <div class="sk-row">Energy markets<div class="sk-bar"><div class="sk-fill" style="width:75%"></div></div></div>
+      <div class="sk-row">Startup / venture<div class="sk-bar"><div class="sk-fill" style="width:72%"></div></div></div>
+      <div class="sk-row">Project management<div class="sk-bar"><div class="sk-fill" style="width:80%"></div></div></div>
+      <div class="sk-row">Data visualization<div class="sk-bar"><div class="sk-fill" style="width:70%"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTACT — DAY ═══ -->
+<section id="contact" data-time="day">
+  <div class="s-top rev">
+    <div class="s-n">05</div>
+    <div class="s-h">CONTACT</div>
+    <div class="s-tag">Initiate_contact.exe</div>
+  </div>
+  <div class="contact-wrap">
+    <div class="contact-l rev">
+      <div class="contact-h">
+        LET'S
+        <span>TALK.</span>
+      </div>
+      <p class="contact-sub">Actively looking for analyst, coordinator, operations, and finance roles in Denver &mdash; open to remote or relocation for the right opportunity. If you're building something serious and need someone who can model it, run it, and make it work &mdash; reach out.</p>
+    </div>
+    <div class="contact-r rev d1">
+      <a href="mailto:henry@example.com" class="cl">
+        <div><div class="cl-lbl">Email</div><div class="cl-val">henry@example.com</div></div>
+        <div class="cl-arr">&rarr;</div>
+      </a>
+      <a href="https://linkedin.com/in/" target="_blank" class="cl">
+        <div><div class="cl-lbl">LinkedIn</div><div class="cl-val">linkedin.com/in/henryadams</div></div>
+        <div class="cl-arr">&rarr;</div>
+      </a>
+      <a href="https://github.com/" target="_blank" class="cl">
+        <div><div class="cl-lbl">GitHub</div><div class="cl-val">github.com/henryadams</div></div>
+        <div class="cl-arr">&rarr;</div>
+      </a>
+      <a href="#" class="cl">
+        <div><div class="cl-lbl">Resume</div><div class="cl-val">Download PDF &mdash; 2025</div></div>
+        <div class="cl-arr">&darr;</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Henry Adams &mdash; &copy; 2025</p>
+  <p>Built from scratch. No templates.</p>
+</footer>
+
+<style>
+/* ═══ MOUNTAIN COLOR STATES ═══ */
+/* DAWN — soft pinks, peach skies, mountains in cool shadow */
+body.t-dawn .sky-dawn-rect{opacity:1}
+body.t-dawn .sky-day-rect{opacity:0}
+body.t-dawn .sky-dusk-rect{opacity:0}
+body.t-dawn .sky-night-rect{opacity:0}
+body.t-dawn .sun{opacity:.45;transform:translateY(60px)}
+body.t-dawn .moon{opacity:.35}
+body.t-dawn .mtn-back-fill{fill:#6e5878}
+body.t-dawn .mtn-mid-fill{fill:#4a3a52}
+body.t-dawn .mtn-front-fill{fill:#2a1f30}
+body.t-dawn .snow-fill{fill:#e8d4c5}
+body.t-dawn .tree-fill{fill:#1a1018}
+
+/* DAY — bright bluebird sky, deep green mountains, white snow */
+body.t-day .sky-dawn-rect{opacity:0}
+body.t-day .sky-day-rect{opacity:1}
+body.t-day .sky-dusk-rect{opacity:0}
+body.t-day .sky-night-rect{opacity:0}
+body.t-day .sun{opacity:1;transform:translateY(0)}
+body.t-day .moon{opacity:0}
+body.t-day .mtn-back-fill{fill:#8a9bb0}
+body.t-day .mtn-mid-fill{fill:#5a6e7a}
+body.t-day .mtn-front-fill{fill:#3a4a52}
+body.t-day .snow-fill{fill:#f5f5f5}
+body.t-day .tree-fill{fill:#1a2a1a}
+
+/* DUSK — golden hour into deep amber, mountains lit in warm rust */
+body.t-dusk .sky-dawn-rect{opacity:0}
+body.t-dusk .sky-day-rect{opacity:0}
+body.t-dusk .sky-dusk-rect{opacity:1}
+body.t-dusk .sky-night-rect{opacity:0}
+body.t-dusk .sun{opacity:.7;transform:translateY(120px)}
+body.t-dusk .moon{opacity:.55}
+body.t-dusk .mtn-back-fill{fill:#5e3a2a}
+body.t-dusk .mtn-mid-fill{fill:#3e2418}
+body.t-dusk .mtn-front-fill{fill:#1f120a}
+body.t-dusk .snow-fill{fill:#e8a574}
+body.t-dusk .tree-fill{fill:#0d0808}
+
+/* NIGHT — deep navy, moonlit silver-blue snow, near-black mountains */
+body.t-night .sky-dawn-rect{opacity:0}
+body.t-night .sky-day-rect{opacity:0}
+body.t-night .sky-dusk-rect{opacity:0}
+body.t-night .sky-night-rect{opacity:1}
+body.t-night .sun{opacity:0;transform:translateY(-200px)}
+body.t-night .moon{opacity:1;transform:translateY(0)}
+body.t-night .mtn-back-fill{fill:#1a2540}
+body.t-night .mtn-mid-fill{fill:#0e1830}
+body.t-night .mtn-front-fill{fill:#050a1a}
+body.t-night .snow-fill{fill:#a8b8d8}
+body.t-night .tree-fill{fill:#020510}
+
+/* SVG layer transitions */
+.layer, .layer path, .celestial, .stars, [class*=-fill]{
+  transition: opacity 1.4s cubic-bezier(.45,.05,.25,1),
+              fill 1.4s cubic-bezier(.45,.05,.25,1),
+              transform 1.6s cubic-bezier(.45,.05,.25,1);
+}
+</style>
+
+<script>
+// ═══ TIME-OF-DAY SCROLL OBSERVER ═══
+// Each section has a data-time attribute. As it enters viewport,
+// the body class changes, triggering palette + mountain transitions.
+
+const TIME_LABELS = {
+  dawn:  'Dawn',
+  day:   'Daybreak',
+  dusk:  'Dusk',
+  night: 'Nightfall'
+};
+
+const timeLabel = document.getElementById('time-label');
+const sections = document.querySelectorAll('section[data-time]');
+
+function setTime(time){
+  document.body.classList.remove('t-dawn','t-day','t-dusk','t-night');
+  document.body.classList.add('t-' + time);
+  if(timeLabel) timeLabel.textContent = TIME_LABELS[time] || time;
+}
+
+// Use IntersectionObserver to detect which section is most visible
+const obs = new IntersectionObserver((entries)=>{
+  // Find the entry with the highest intersection ratio that's actually visible
+  let topEntry = null;
+  let topRatio = 0;
+  entries.forEach(e=>{
+    if(e.isIntersecting && e.intersectionRatio > topRatio){
+      topRatio = e.intersectionRatio;
+      topEntry = e;
+    }
+  });
+  if(topEntry){
+    const time = topEntry.target.dataset.time;
+    if(time) setTime(time);
+  }
+},{
+  threshold:[0.25,0.5,0.75],
+  rootMargin:'-15% 0px -35% 0px'
+});
+
+sections.forEach(s=>obs.observe(s));
+
+// Initialize with hero's time
+setTime('dawn');
+
+// Reveal animations
+const revIo = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      revIo.unobserve(e.target);
+    }
+  });
+},{threshold:0.07});
+document.querySelectorAll('.rev').forEach(el=>revIo.observe(el));
+</script>
+
+</body>
+</html>
