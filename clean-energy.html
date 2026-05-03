@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Clean Energy Market Analysis — Henry Adams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--serif:'Cormorant Garamond',Georgia,serif;--display:'Bebas Neue',sans-serif;--mono:'IBM Plex Mono',monospace;--bg:#f5f1ea;--bg2:#ebe5d6;--bg3:#e0d8c4;--ink:#1a1410;--ink2:#4a3f35;--ink3:#928572;--ink4:#c8bda8;--rule:rgba(26,20,16,0.1);--rule2:rgba(26,20,16,0.18);--accent:#9e3d1a;--amber:#a86c1e;--sage:#3d5e42;--green:#6aad7a}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--mono);font-weight:300;line-height:1.6;overflow-x:hidden;cursor:none}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.022;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23f)'/%3E%3C/svg%3E");background-size:220px}
+::-webkit-scrollbar{width:2px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--accent)}
+.cursor-dot,.cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:9000;border-radius:50%;transform:translate(-50%,-50%);mix-blend-mode:difference}
+.cursor-dot{width:6px;height:6px;background:#f5f1ea;transition:transform .1s ease}
+.cursor-ring{width:32px;height:32px;border:1px solid rgba(245,241,234,.4);transition:width .2s,height .2s,border-color .2s}
+body.hovering .cursor-ring{width:60px;height:60px;border-color:rgba(245,241,234,.8)}
+@media(max-width:960px){.cursor-dot,.cursor-ring{display:none}body{cursor:auto}}
+nav{position:fixed;top:0;left:0;right:0;z-index:600;height:48px;display:flex;align-items:stretch;border-bottom:1px solid var(--rule2);background:rgba(245,241,234,.92);backdrop-filter:blur(20px)}
+.nb{display:flex;align-items:center;padding:0 2.5rem;border-right:1px solid var(--rule2);font-family:var(--display);font-size:1.2rem;letter-spacing:.1em;color:var(--ink);text-decoration:none}
+.nb em{color:var(--accent);font-style:normal}
+.back-link{display:flex;align-items:center;gap:.65rem;padding:0 1.5rem;border-right:1px solid var(--rule2);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink3);text-decoration:none;transition:color .15s,background .15s}
+.back-link:hover{color:var(--accent);background:var(--bg2)}
+.nl{display:flex;align-items:stretch;list-style:none;margin-left:auto}
+.nl a{display:flex;align-items:center;padding:0 1.25rem;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink3);text-decoration:none;border-left:1px solid var(--rule);transition:color .15s,background .15s}
+.nl a:hover{color:var(--ink);background:var(--bg2)}
+.n-tag{display:flex;align-items:center;gap:.6rem;padding:0 1.5rem;border-left:1px solid var(--rule2);font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber)}
+.n-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--amber);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+#p-hero{padding:9rem 4rem 5rem;border-bottom:1px solid var(--rule2)}
+.p-meta{font-family:var(--mono);font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:2rem;display:flex;align-items:center;gap:1rem}
+.p-meta::before{content:'';width:36px;height:1px;background:var(--accent)}
+.p-title{font-family:var(--display);font-size:clamp(4rem,9vw,8.5rem);line-height:.9;letter-spacing:.02em;color:var(--ink);margin-bottom:2rem}
+.p-subtitle{font-family:var(--serif);font-size:1.4rem;font-weight:300;font-style:italic;color:var(--ink2);max-width:780px;line-height:1.7;margin-bottom:3rem}
+.p-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:3rem;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.p-stat{padding:1.5rem 1.5rem;border-right:1px solid var(--rule)}
+.p-stat:last-child{border-right:none}
+.p-stat-lbl{font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink3);margin-bottom:.5rem}
+.p-stat-val{font-family:var(--display);font-size:1.6rem;color:var(--ink);letter-spacing:.04em}
+.p-stat-val.accent{color:var(--accent)}
+section{position:relative;z-index:5;background:var(--bg)}
+.s-top{display:grid;grid-template-columns:64px 1fr auto;align-items:center;min-height:56px;border-bottom:1px solid var(--rule2)}
+.s-n{display:flex;align-items:center;justify-content:center;height:100%;border-right:1px solid var(--rule2);font-family:var(--mono);font-size:.52rem;letter-spacing:.16em;color:var(--accent);padding:.75rem 0}
+.s-h{font-family:var(--display);font-size:2rem;letter-spacing:.08em;color:var(--ink);padding:0 2rem}
+.s-tag{padding:0 2rem;font-family:var(--mono);font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink4)}
+.content-block{padding:4rem;border-bottom:1px solid var(--rule2)}
+.content-block.two-col{display:grid;grid-template-columns:1fr 320px;gap:0;padding:0}
+.cb-main{padding:4rem;border-right:1px solid var(--rule2)}
+.cb-side{padding:4rem 2.5rem;background:var(--bg2)}
+.cb-main p,.content-block p{font-family:var(--serif);font-size:1.1rem;font-weight:300;color:var(--ink2);line-height:2.05;margin-bottom:1.4rem;max-width:780px}
+.cb-main p strong,.content-block p strong{color:var(--ink);font-weight:500}
+.cb-main h3,.content-block h3{font-family:var(--display);font-size:1.6rem;letter-spacing:.05em;color:var(--ink);margin:2rem 0 1.25rem}
+.cb-main h3:first-child{margin-top:0}
+.cb-side-lbl{font-family:var(--mono);font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:.75rem;padding-bottom:.65rem;border-bottom:1px solid var(--rule);display:block}
+.cb-side dl{display:grid;gap:1.25rem;margin-top:1.5rem}
+.cb-side dt{font-family:var(--mono);font-size:.55rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3);margin-bottom:.3rem}
+.cb-side dd{font-family:var(--serif);font-size:.95rem;font-weight:300;color:var(--ink);line-height:1.6}
+.coming-block{padding:5rem 4rem;text-align:center;border-bottom:1px solid var(--rule2);background:var(--bg2)}
+.coming-eyebrow{font-family:var(--mono);font-size:.55rem;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin-bottom:1.5rem}
+.coming-h{font-family:var(--display);font-size:clamp(2.5rem,5vw,4rem);letter-spacing:.04em;color:var(--ink);line-height:1;margin-bottom:1.5rem}
+.coming-d{font-family:var(--serif);font-size:1.1rem;font-weight:300;font-style:italic;color:var(--ink2);max-width:580px;margin:0 auto;line-height:1.85}
+.coming-progress{margin-top:3rem;font-family:var(--mono);font-size:.5rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);display:flex;align-items:center;justify-content:center;gap:1rem}
+.coming-bar{width:200px;height:1px;background:var(--rule2);position:relative;overflow:hidden}
+.coming-bar::after{content:'';position:absolute;top:0;left:0;height:100%;width:35%;background:var(--accent)}
+.proj-nav{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--rule2)}
+.pn-cell{padding:3rem;text-decoration:none;color:inherit;transition:background .2s}
+.pn-cell:hover{background:var(--bg2)}
+.pn-cell.next{border-left:1px solid var(--rule2);text-align:right}
+.pn-lbl{font-family:var(--mono);font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);margin-bottom:.6rem}
+.pn-title{font-family:var(--display);font-size:1.6rem;letter-spacing:.05em;color:var(--ink)}
+footer{padding:1.1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:var(--bg2)}
+footer p{font-family:var(--mono);font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+.rev{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}
+.rev.in{opacity:1;transform:none}
+@media(max-width:960px){
+  .nl{display:none}#p-hero{padding:7rem 1.5rem 3rem}.p-stats{grid-template-columns:repeat(2,1fr)}.p-stat{border-bottom:1px solid var(--rule)}
+  .content-block{padding:2.5rem 1.5rem}.content-block.two-col{grid-template-columns:1fr}.cb-main{padding:2.5rem 1.5rem;border-right:none}.cb-side{padding:2.5rem 1.5rem}
+  .coming-block{padding:3rem 1.5rem}
+  .proj-nav{grid-template-columns:1fr}.pn-cell{padding:2rem 1.5rem}.pn-cell.next{border-left:none;border-top:1px solid var(--rule2);text-align:left}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-dot"></div>
+<div class="cursor-ring"></div>
+
+<nav>
+  <a href="../index.html" class="nb">H<em>.</em>ADAMS</a>
+  <a href="../index.html" class="back-link">&larr; All projects</a>
+  <ul class="nl">
+    <li><a href="../index.html#about">About</a></li>
+    <li><a href="../index.html#projects">Projects</a></li>
+    <li><a href="../index.html#contact">Contact</a></li>
+  </ul>
+  <div class="n-tag">In progress</div>
+</nav>
+
+<section id="p-hero">
+  <div class="p-meta">Project 06 &mdash; Energy Markets</div>
+  <h1 class="p-title">CLEAN ENERGY<br>MARKET ANALYSIS.</h1>
+  <p class="p-subtitle">An interactive data dashboard built on real public datasets from NREL and the EIA — tracking renewable capacity growth, technology cost curves, and regional deployment patterns across the US energy transition.</p>
+  <div class="p-stats">
+    <div class="p-stat"><div class="p-stat-lbl">Datasets</div><div class="p-stat-val accent">NREL · EIA</div></div>
+    <div class="p-stat"><div class="p-stat-lbl">Coverage</div><div class="p-stat-val">US</div></div>
+    <div class="p-stat"><div class="p-stat-lbl">Project</div><div class="p-stat-val">06 / 08</div></div>
+    <div class="p-stat"><div class="p-stat-lbl">Status</div><div class="p-stat-val">In progress</div></div>
+  </div>
+</section>
+
+<section>
+  <div class="s-top rev"><div class="s-n">01</div><div class="s-h">THE PROBLEM</div><div class="s-tag">Why this exists</div></div>
+  <div class="content-block two-col">
+    <div class="cb-main rev">
+      <p>The energy transition is the largest capital reallocation in human history, and it's happening live. Anyone analyzing investments, infrastructure, or policy in this space needs current data — not 2019 cost curves, not the IEA's pessimistic forecasts that get revised upward every cycle.</p>
+      <p>The data exists. NREL publishes annual technology baseline costs. EIA publishes capacity, generation, and consumption data. The challenge is making it accessible — pulling the relevant numbers, normalizing units, and presenting it in a way that surfaces real patterns instead of drowning the reader in CSVs.</p>
+    </div>
+    <div class="cb-side rev">
+      <span class="cb-side-lbl">At a glance</span>
+      <dl>
+        <dt>Domain</dt><dd>Energy Markets</dd>
+        <dt>Project number</dt><dd>06 of 08</dd>
+        <dt>Status</dt><dd>Build in progress</dd>
+        <dt>Live tool</dt><dd>Coming soon — interactive component planned</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="s-top rev"><div class="s-n">02</div><div class="s-h">THE APPROACH</div><div class="s-tag">How it works</div></div>
+  <div class="content-block rev">
+    <p>The dashboard pulls from the NREL Annual Technology Baseline (ATB) for capital costs, capacity factors, and LCOE projections by technology. EIA provides historical capacity and generation data by state, fuel type, and year. Data is loaded, normalized, and rendered as interactive charts.</p>
+    <p>Three interactive views. First, technology cost curves — solar PV, onshore wind, offshore wind, battery storage — with cost decline trajectories. Second, capacity buildout by state and technology, filterable by year. Third, regional generation mix evolution, showing the share shift from coal and gas toward renewables. Built on real numbers, informed by RFC Ambrian incubator work.</p>
+  </div>
+</section>
+
+<section>
+  <div class="coming-block">
+    <div class="coming-eyebrow">— Interactive build in progress —</div>
+    <div class="coming-h">THE TOOL ITSELF<br>IS BEING BUILT.</div>
+    <p class="coming-d">This page is the case-study shell. The interactive component — the actual working analytical tool — is in active development. Check back soon, or reach out if you want a preview.</p>
+    <div class="coming-progress">
+      <span>Build progress</span>
+      <div class="coming-bar"></div>
+      <span>35%</span>
+    </div>
+  </div>
+</section>
+
+<div class="proj-nav">
+  <a href="../index.html#projects" class="pn-cell"><div class="pn-lbl">&larr; All projects</div><div class="pn-title">View the index</div></a>
+  <a href="angrist-lavy.html" class="pn-cell next"><div class="pn-lbl">Next project &rarr;</div><div class="pn-title">ANGRIST & LAVY REPLICATION</div></a>
+</div>
+
+<footer><p>Henry Adams &mdash; &copy; 2025</p><p>Project 06 of 08</p></footer>
+
+<script>
+const cDot=document.querySelector('.cursor-dot'),cRing=document.querySelector('.cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cDot.style.left=mx+'px';cDot.style.top=my+'px'});
+function tickC(){rx+=(mx-rx)*.15;ry+=(my-ry)*.15;cRing.style.left=rx+'px';cRing.style.top=ry+'px';requestAnimationFrame(tickC)}tickC();
+document.querySelectorAll('a,button,input').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'))});
+const revIo=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');revIo.unobserve(e.target)}})},{threshold:0.05});
+document.querySelectorAll('.rev').forEach(el=>revIo.observe(el));
+</script>
+</body>
+</html>
