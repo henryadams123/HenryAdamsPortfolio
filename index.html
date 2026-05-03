@@ -18,163 +18,207 @@
   --ink:#1a1410; --ink2:#4a3f35; --ink3:#928572; --ink4:#c8bda8;
   --rule:rgba(26,20,16,0.1); --rule2:rgba(26,20,16,0.18);
   --accent:#9e3d1a; --amber:#a86c1e; --sage:#3d5e42;
+  --panel: rgba(245,241,234,0.94);
+  --panel-blur: 18px;
 }
 
 html{scroll-behavior:smooth}
 body{
   background:var(--bg);color:var(--ink);
   font-family:var(--mono);font-weight:300;line-height:1.6;
-  overflow-x:hidden;
-  cursor:none;
+  overflow-x:hidden;cursor:none;
+  position:relative;
 }
 
 /* ─── PAGE LOADER ─── */
 #loader{
-  position:fixed;inset:0;z-index:9999;
-  background:var(--ink);
-  display:flex;align-items:center;justify-content:center;
-  flex-direction:column;
+  position:fixed;inset:0;z-index:9999;background:#0d0c0b;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
   transition:opacity .8s ease, visibility .8s ease;
 }
 #loader.gone{opacity:0;visibility:hidden}
-.loader-mark{
-  font-family:var(--display);
-  font-size:clamp(4rem,9vw,8rem);
-  letter-spacing:.04em;
-  color:var(--bg);
-  margin-bottom:2rem;
-  overflow:hidden;
-}
-.loader-mark span{
-  display:inline-block;
-  transform:translateY(110%);
-  animation:rise .8s cubic-bezier(.5,0,.2,1) forwards;
-}
+.loader-mark{font-family:var(--display);font-size:clamp(4rem,9vw,8rem);letter-spacing:.04em;color:var(--bg);margin-bottom:2rem;overflow:hidden}
+.loader-mark span{display:inline-block;transform:translateY(110%);animation:rise .8s cubic-bezier(.5,0,.2,1) forwards}
 .loader-mark span:nth-child(1){animation-delay:.1s}
 .loader-mark span:nth-child(2){animation-delay:.18s}
 @keyframes rise{to{transform:translateY(0)}}
-.loader-bar{
-  width:240px;height:1px;background:rgba(245,241,234,.2);
-  position:relative;overflow:hidden;
-}
-.loader-bar::after{
-  content:'';position:absolute;top:0;left:0;height:100%;width:100%;
-  background:var(--bg);transform:translateX(-100%);
-  animation:fill 1.6s cubic-bezier(.7,0,.2,1) .3s forwards;
-}
+.loader-bar{width:240px;height:1px;background:rgba(245,241,234,.2);position:relative;overflow:hidden}
+.loader-bar::after{content:'';position:absolute;top:0;left:0;height:100%;width:100%;background:var(--bg);transform:translateX(-100%);animation:fill 1.6s cubic-bezier(.7,0,.2,1) .3s forwards}
 @keyframes fill{to{transform:translateX(0)}}
-.loader-pct{
-  font-family:var(--mono);font-size:.55rem;letter-spacing:.2em;
-  color:var(--bg);margin-top:1rem;opacity:.6;
-}
+.loader-pct{font-family:var(--mono);font-size:.55rem;letter-spacing:.2em;color:var(--bg);margin-top:1rem;opacity:.6}
 
 /* ─── CUSTOM CURSOR ─── */
-.cursor-dot, .cursor-ring{
-  position:fixed;top:0;left:0;pointer-events:none;
-  z-index:9000;border-radius:50%;
-  transform:translate(-50%,-50%);
-  mix-blend-mode:difference;
-}
-.cursor-dot{
-  width:6px;height:6px;background:#f5f1ea;
-  transition:transform .1s ease;
-}
-.cursor-ring{
-  width:32px;height:32px;
-  border:1px solid rgba(245,241,234,.4);
-  transition:width .2s ease, height .2s ease, border-color .2s ease, opacity .2s ease;
-}
-body.hovering .cursor-ring{
-  width:60px;height:60px;
-  border-color:rgba(245,241,234,.8);
-}
+.cursor-dot,.cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:9000;border-radius:50%;transform:translate(-50%,-50%);mix-blend-mode:difference}
+.cursor-dot{width:6px;height:6px;background:#f5f1ea}
+.cursor-ring{width:32px;height:32px;border:1px solid rgba(245,241,234,.4);transition:width .2s,height .2s,border-color .2s}
+body.hovering .cursor-ring{width:60px;height:60px;border-color:rgba(245,241,234,.8)}
 @media(max-width:960px){.cursor-dot,.cursor-ring{display:none}body{cursor:auto}}
 
-/* ─── GRAIN ─── */
+::-webkit-scrollbar{width:2px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--accent)}
+
+/* ════════════════════════════════════════════════
+   THE MOUNTAIN STAGE — fixed, full viewport, always visible
+   Three depth layers (back/mid/front) move at different speeds
+   creating 2.5D parallax illusion of camera movement
+   ════════════════════════════════════════════════ */
+#mountain-stage{
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  z-index:0;
+  pointer-events:none;
+  overflow:hidden;
+  /* Whole stage tints with day/night palette */
+}
+
+/* Sky layer — slowest moving, blurred, biggest */
+.mtn-layer-back{
+  position:absolute;
+  top:-10%;left:-5%;right:-5%;bottom:-10%;
+  background-image:url('mountains.jpg');
+  background-size:cover;
+  background-position:center 20%;
+  filter:
+    blur(var(--mtn-blur-back, 8px))
+    brightness(var(--mtn-brightness, 1))
+    saturate(var(--mtn-saturate, 1))
+    hue-rotate(var(--mtn-hue, 0deg));
+  transform:translate3d(0, var(--mtn-back-y, 0px), 0) scale(var(--mtn-back-scale, 1.15));
+  opacity:.8;
+  transition:filter .15s linear;
+}
+
+/* Mid ridge layer — medium speed, slight blur, masks to mid-range */
+.mtn-layer-mid{
+  position:absolute;
+  top:-5%;left:-3%;right:-3%;bottom:-5%;
+  background-image:url('mountains.jpg');
+  background-size:cover;
+  background-position:center 50%;
+  filter:
+    blur(var(--mtn-blur-mid, 2px))
+    brightness(var(--mtn-brightness, 1))
+    saturate(var(--mtn-saturate, 1))
+    hue-rotate(var(--mtn-hue, 0deg));
+  transform:translate3d(0, var(--mtn-mid-y, 0px), 0) scale(var(--mtn-mid-scale, 1.08));
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, black 35%, black 100%);
+  mask-image:linear-gradient(to bottom, transparent 0%, black 35%, black 100%);
+  transition:filter .15s linear;
+}
+
+/* Foreground peaks — fastest, sharpest, only the bottom portion */
+.mtn-layer-front{
+  position:absolute;
+  inset:0;
+  background-image:url('mountains.jpg');
+  background-size:cover;
+  background-position:center 75%;
+  filter:
+    brightness(var(--mtn-brightness, 1))
+    saturate(var(--mtn-saturate, 1.05))
+    contrast(var(--mtn-contrast, 1.05))
+    hue-rotate(var(--mtn-hue, 0deg));
+  transform:translate3d(0, var(--mtn-front-y, 0px), 0) scale(var(--mtn-front-scale, 1));
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, transparent 50%, black 75%, black 100%);
+  mask-image:linear-gradient(to bottom, transparent 0%, transparent 50%, black 75%, black 100%);
+  transition:filter .15s linear;
+}
+
+/* Atmosphere overlay (color tint via blend) */
+.mtn-atm{
+  position:absolute;inset:0;
+  background:var(--atm-color, transparent);
+  mix-blend-mode:var(--atm-blend, soft-light);
+  opacity:var(--atm-opacity, .55);
+  pointer-events:none;
+  transition:background .15s linear, opacity .15s linear;
+}
+
+/* Sky gradient overlay */
+.mtn-sky{
+  position:absolute;top:0;left:0;right:0;
+  height:60%;
+  background:var(--sky-grad, transparent);
+  mix-blend-mode:screen;
+  opacity:var(--sky-opacity, .5);
+  pointer-events:none;
+  transition:background .15s linear, opacity .15s linear;
+}
+
+/* Sun/moon */
+.celestial{
+  position:absolute;width:100px;height:100px;border-radius:50%;
+  pointer-events:none;transform:translate(-50%,-50%);
+  background:var(--cel-color);filter:blur(2px);
+  transition:background .15s linear;
+}
+
+/* Stars */
+.stars{position:absolute;inset:0;opacity:var(--stars-opacity, 0);transition:opacity .2s linear;pointer-events:none}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;box-shadow:0 0 4px rgba(255,255,255,.8)}
+
+/* Grain on top of everything */
 body::before{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:1;
-  opacity:.022;
+  opacity:.025;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23f)'/%3E%3C/svg%3E");
   background-size:220px;
 }
-::-webkit-scrollbar{width:2px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--accent)}
 
 /* ─── NAV ─── */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:600;
   height:48px;display:flex;align-items:stretch;
   border-bottom:1px solid var(--rule2);
-  background:color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter:blur(20px);
+  background:var(--panel);
+  backdrop-filter:blur(var(--panel-blur));
 }
-.nb{
-  display:flex;align-items:center;padding:0 2.5rem;
-  border-right:1px solid var(--rule2);
-  font-family:var(--display);font-size:1.2rem;letter-spacing:.1em;
-  color:var(--ink);text-decoration:none;white-space:nowrap;
-}
+.nb{display:flex;align-items:center;padding:0 2.5rem;border-right:1px solid var(--rule2);font-family:var(--display);font-size:1.2rem;letter-spacing:.1em;color:var(--ink);text-decoration:none;white-space:nowrap}
 .nb em{color:var(--accent);font-style:normal}
 .nl{display:flex;align-items:stretch;list-style:none;margin-left:auto}
-.nl a{
-  display:flex;align-items:center;padding:0 1.25rem;
-  font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--ink3);text-decoration:none;border-left:1px solid var(--rule);
-  transition:color .15s,background .15s;
-}
+.nl a{display:flex;align-items:center;padding:0 1.25rem;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink3);text-decoration:none;border-left:1px solid var(--rule);transition:color .15s,background .15s}
 .nl a:hover{color:var(--ink);background:var(--bg2)}
-.n-time{
-  display:flex;align-items:center;gap:.6rem;padding:0 1.5rem;
-  border-left:1px solid var(--rule2);
-  font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink3);
-  min-width:150px;
-}
-.n-time-icon{
-  width:10px;height:10px;border-radius:50%;background:var(--accent);
-  box-shadow:0 0 14px var(--accent);
-}
+.n-time{display:flex;align-items:center;gap:.6rem;padding:0 1.5rem;border-left:1px solid var(--rule2);font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink3);min-width:150px}
+.n-time-icon{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent)}
 
-/* ─── HERO ─── */
+/* ════════════════════════════════════════════════
+   CONTENT — sits OVER the fixed mountain stage
+   Each section has its own panel surface for text legibility
+   ════════════════════════════════════════════════ */
+
+main{position:relative;z-index:5}
+
+/* HERO — open, no panel, lets mountain breathe */
 #hero{
   height:100vh;padding-top:48px;
-  position:relative;display:flex;flex-direction:column;
-  border-bottom:1px solid var(--rule2);overflow:hidden;
+  position:relative;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  border-bottom:1px solid var(--rule2);
 }
-.stage{position:absolute;top:0;left:0;right:0;bottom:0;z-index:2;pointer-events:none;overflow:hidden}
-.mtn-img{
-  position:absolute;inset:0;
-  background-image:url('mountains.jpg');background-size:cover;background-position:center 60%;
-  filter:brightness(var(--mtn-brightness,1)) saturate(var(--mtn-saturate,1)) contrast(var(--mtn-contrast,1)) hue-rotate(var(--mtn-hue,0deg));
-  transform:scale(var(--mtn-scale,1.05)) translateY(var(--mtn-y, 0px));
-  transition:filter .1s linear;
+.hero-body{
+  position:relative;z-index:5;
+  flex:1;display:grid;grid-template-columns:1fr 380px;align-items:end;
 }
-.atmosphere{position:absolute;inset:0;background:var(--atm-color,transparent);mix-blend-mode:var(--atm-blend,soft-light);opacity:var(--atm-opacity,.55);transition:background .1s linear,opacity .1s linear}
-.sky-overlay{position:absolute;top:0;left:0;right:0;height:60%;background:var(--sky-grad,transparent);mix-blend-mode:screen;opacity:var(--sky-opacity,.5);pointer-events:none;transition:background .1s linear,opacity .1s linear}
-.celestial{position:absolute;width:100px;height:100px;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);z-index:3;background:var(--cel-color);filter:blur(2px);transition:background .1s linear}
-.stars{position:absolute;inset:0;opacity:var(--stars-opacity,0);transition:opacity .15s linear;pointer-events:none}
-.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;box-shadow:0 0 4px rgba(255,255,255,.8)}
-.hero-fade{position:absolute;left:0;right:0;bottom:0;height:200px;background:linear-gradient(to bottom,transparent 0%,color-mix(in srgb,var(--bg) 70%,transparent) 60%,var(--bg) 100%);pointer-events:none;z-index:4}
-
-.hero-body{position:relative;z-index:5;flex:1;display:grid;grid-template-columns:1fr 380px;align-items:end}
 .hero-l{
   padding:5rem 4rem 3rem;
-  background:linear-gradient(to top,color-mix(in srgb,var(--bg) 92%,transparent) 0%,color-mix(in srgb,var(--bg) 70%,transparent) 70%,transparent 100%);
-  border-right:1px solid var(--rule2);backdrop-filter:blur(4px);
+  background:linear-gradient(to top, color-mix(in srgb, var(--bg) 92%, transparent) 0%, color-mix(in srgb, var(--bg) 70%, transparent) 70%, transparent 100%);
+  border-right:1px solid var(--rule2);
+  backdrop-filter:blur(4px);
 }
 .h-eyebrow{font-family:var(--mono);font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:2rem;display:flex;align-items:center;gap:1.25rem}
 .h-eyebrow::before{content:'';width:36px;height:1px;background:var(--accent)}
 .h-name{
-  font-family:var(--display);font-size:clamp(4.5rem,8.5vw,8rem);
+  font-family:var(--display);font-size:clamp(4.5rem,9vw,9rem);
   line-height:.86;letter-spacing:.015em;color:var(--ink);margin-bottom:2rem;
-  text-shadow:0 2px 30px color-mix(in srgb,var(--bg) 40%,transparent);
+  text-shadow:0 2px 30px color-mix(in srgb, var(--bg) 40%, transparent);
 }
 .h-name .word{display:inline-block;overflow:hidden;vertical-align:bottom}
 .h-name .word span{display:inline-block;transform:translateY(110%);transition:transform .9s cubic-bezier(.5,0,.2,1)}
 body.loaded .h-name .word span{transform:translateY(0)}
 .h-name .sur{color:var(--accent);display:block}
 .h-text{
-  font-family:var(--serif);font-size:1.1rem;font-weight:300;font-style:italic;
-  color:var(--ink2);line-height:1.95;max-width:540px;
-  margin-bottom:2rem;padding-left:1.5rem;border-left:1px solid var(--accent);
+  font-family:var(--serif);font-size:1.15rem;font-weight:300;font-style:italic;
+  color:var(--ink2);line-height:1.85;max-width:560px;
+  margin-bottom:2.5rem;padding-left:1.5rem;border-left:1px solid var(--accent);
   opacity:0;transform:translateY(20px);
   transition:opacity 1s ease 1.4s, transform 1s ease 1.4s;
 }
@@ -182,21 +226,20 @@ body.loaded .h-text{opacity:1;transform:none}
 .h-actions{display:flex;gap:.6rem;flex-wrap:wrap;opacity:0;transition:opacity 1s ease 1.7s}
 body.loaded .h-actions{opacity:1}
 .btn{
-  font-family:var(--mono);font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;
-  padding:.7rem 1.5rem;text-decoration:none;display:inline-block;
-  border:1px solid var(--rule2);color:var(--ink);
-  transition:all .25s;background:transparent;position:relative;
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  padding:.8rem 1.6rem;text-decoration:none;display:inline-block;
+  border:1px solid var(--rule2);color:var(--ink);background:var(--panel);
+  backdrop-filter:blur(8px);
+  transition:transform .3s cubic-bezier(.2,1,.2,1), background .25s, color .25s, border-color .25s;
+  will-change:transform;
 }
 .btn:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .btn-acc{background:var(--accent);border-color:var(--accent);color:#f5e6d0}
 .btn-acc:hover{background:transparent;color:var(--accent);border-color:var(--accent)}
-/* magnetic */
-.btn{will-change:transform;transition:transform .3s cubic-bezier(.2,1,.2,1), background .25s, color .25s, border-color .25s}
-
 .hero-r{
   display:flex;flex-direction:column;align-self:stretch;
-  background:color-mix(in srgb,var(--bg2) 85%,transparent);
-  backdrop-filter:blur(8px);
+  background:var(--panel);
+  backdrop-filter:blur(var(--panel-blur));
   opacity:0;transform:translateX(40px);
   transition:opacity 1s ease 1.2s, transform 1s ease 1.2s;
 }
@@ -204,23 +247,41 @@ body.loaded .hero-r{opacity:1;transform:none}
 .h-stat{flex:1;padding:1.5rem 2rem;border-bottom:1px solid var(--rule);display:flex;flex-direction:column;justify-content:flex-end}
 .h-stat:last-child{border-bottom:none}
 .h-stat-idx{font-family:var(--mono);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink4);margin-bottom:auto}
-.h-stat-num{font-family:var(--display);font-size:2.2rem;line-height:1;letter-spacing:.04em;color:var(--ink);margin-top:1rem;margin-bottom:.25rem}
+.h-stat-num{font-family:var(--display);font-size:2.4rem;line-height:1;letter-spacing:.04em;color:var(--ink);margin-top:1rem;margin-bottom:.25rem}
 .h-stat-num.acc{color:var(--accent)}
 .h-stat-label{font-family:var(--mono);font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
 
-.ticker{
-  border-top:1px solid var(--rule2);padding:.65rem 0;overflow:hidden;
-  background:color-mix(in srgb,var(--bg3) 90%,transparent);
-  backdrop-filter:blur(8px);flex-shrink:0;position:relative;z-index:5;
+/* ─── BREATH MOMENTS — gaps showing pure mountain ─── */
+.breath{
+  height:50vh;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
 }
-.ticker-track{display:flex;gap:3rem;white-space:nowrap;animation:tick 32s linear infinite}
-.ticker-track:hover{animation-play-state:paused}
-@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.ti{display:flex;align-items:center;gap:.65rem;flex-shrink:0;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3)}
-.ti-dot{width:3px;height:3px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.breath-content{
+  font-family:var(--display);
+  font-size:clamp(3rem,7vw,6rem);
+  letter-spacing:.06em;color:var(--bg);
+  text-align:center;
+  text-shadow:0 4px 40px rgba(0,0,0,.5);
+  opacity:.85;
+  padding:0 2rem;
+  line-height:1;
+}
+.breath-eyebrow{
+  font-family:var(--mono);font-size:.55rem;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--bg);
+  opacity:.6;margin-bottom:1.5rem;
+}
 
-/* ─── SECTIONS ─── */
-section{position:relative;z-index:10;background:var(--bg)}
+/* ─── CONTENT SECTIONS ─── */
+.section-panel{
+  position:relative;z-index:5;
+  background:var(--panel);
+  backdrop-filter:blur(var(--panel-blur));
+  border-top:1px solid var(--rule2);
+  border-bottom:1px solid var(--rule2);
+}
+
 .s-top{display:grid;grid-template-columns:64px 1fr auto;align-items:center;min-height:56px;border-bottom:1px solid var(--rule2)}
 .s-n{display:flex;align-items:center;justify-content:center;height:100%;border-right:1px solid var(--rule2);font-family:var(--mono);font-size:.52rem;letter-spacing:.16em;color:var(--accent);padding:.75rem 0}
 .s-h{font-family:var(--display);font-size:2rem;letter-spacing:.08em;color:var(--ink);padding:0 2rem;overflow:hidden}
@@ -228,58 +289,20 @@ section{position:relative;z-index:10;background:var(--bg)}
 .s-h.in .reveal-text{transform:translateY(0)}
 .s-tag{padding:0 2rem;font-family:var(--mono);font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink4)}
 
-/* ─── PINNED INTRO SECTION ─── */
-#intro-pin{
-  height:300vh;
-  position:relative;
-  background:var(--bg);
-  border-bottom:1px solid var(--rule2);
-}
-.intro-sticky{
-  position:sticky;top:48px;
-  height:calc(100vh - 48px);
-  display:flex;align-items:center;justify-content:center;
-  overflow:hidden;
-}
-.intro-stage{
-  text-align:center;padding:0 2rem;max-width:1100px;
-}
-.intro-eyebrow{
-  font-family:var(--mono);font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
-  color:var(--accent);margin-bottom:2rem;
-  opacity:var(--intro-eyebrow-op,1);
-  transform:translateY(var(--intro-eyebrow-y,0px));
-}
-.intro-words{
-  font-family:var(--display);
-  font-size:clamp(3rem,8vw,8rem);
-  line-height:.95;letter-spacing:.03em;
-  color:var(--ink);
-}
-.intro-words .iw{display:inline-block;transition:opacity .3s, color .3s, transform .5s}
-.intro-words .iw.dim{opacity:.15;color:var(--ink3)}
-.intro-words .iw.hot{color:var(--accent)}
-.intro-progress{
-  margin-top:3rem;
-  font-family:var(--mono);font-size:.55rem;letter-spacing:.2em;color:var(--ink3);
-}
-
-/* ─── ABOUT ─── */
-#about{border-bottom:1px solid var(--rule2)}
+/* ABOUT */
 .about-wrap{display:grid;grid-template-columns:1fr 300px}
 .about-body{padding:5rem;border-right:1px solid var(--rule2)}
 .about-body p{font-family:var(--serif);font-size:1.1rem;font-weight:300;color:var(--ink2);line-height:2.05;margin-bottom:1.6rem}
 .about-body p strong{color:var(--ink);font-weight:500}
 .pull-quote{font-family:var(--display);font-size:clamp(2.2rem,4vw,3rem);letter-spacing:.05em;color:var(--accent);line-height:1.05;margin:3rem 0}
-.about-side{background:var(--bg2)}
+.about-side{background:rgba(235,229,214,0.6)}
 .as-row{padding:1.75rem 1.85rem;border-bottom:1px solid var(--rule)}
 .as-row:last-child{border-bottom:none}
 .as-lbl{font-family:var(--mono);font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:.7rem}
 .as-val{font-family:var(--serif);font-size:1rem;font-weight:300;color:var(--ink2);line-height:1.75}
 .as-val strong{display:block;font-family:var(--mono);font-size:.7rem;font-weight:400;color:var(--ink);margin-bottom:.2rem;letter-spacing:.02em}
 
-/* ─── PROJECTS ─── */
-#projects{border-bottom:1px solid var(--rule2)}
+/* PROJECTS */
 .proj-grid{display:grid;grid-template-columns:1fr 1fr}
 .pc{
   display:block;padding:3rem 3.5rem;text-decoration:none;color:inherit;
@@ -294,11 +317,10 @@ section{position:relative;z-index:10;background:var(--bg)}
   background:var(--accent);transform:scaleX(0);transform-origin:left;
   transition:transform .45s ease;
 }
-.pc:hover{background:var(--bg2)}
+.pc:hover{background:rgba(235,229,214,0.6)}
 .pc:hover::before{transform:scaleX(1)}
-/* hover preview */
 .pc-preview{
-  position:absolute;top:50%;right:2rem;width:120px;height:80px;
+  position:absolute;top:50%;right:2rem;width:90px;height:60px;
   background:var(--accent);opacity:0;
   transform:translate(20px,-50%) scale(.9);
   transition:opacity .35s, transform .35s;
@@ -307,7 +329,6 @@ section{position:relative;z-index:10;background:var(--bg)}
   font-family:var(--mono);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--bg);
 }
 .pc:hover .pc-preview{opacity:1;transform:translate(0,-50%) scale(1)}
-
 .pc-idx{font-family:var(--mono);font-size:.5rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:1.25rem}
 .pc-title{font-family:var(--display);font-size:clamp(1.7rem,2.6vw,2.2rem);letter-spacing:.04em;color:var(--ink);line-height:1;margin-bottom:1.25rem}
 .pc-desc{font-family:var(--serif);font-size:1.02rem;font-weight:300;color:var(--ink2);line-height:1.95;margin-bottom:1.75rem}
@@ -318,10 +339,9 @@ section{position:relative;z-index:10;background:var(--bg)}
 .pc-status.live{color:var(--sage)}
 .pc-status.wip{color:var(--amber)}
 
-/* ─── EXPERIENCE ─── */
-#experience{border-bottom:1px solid var(--rule2)}
+/* EXPERIENCE */
 .exp-item{display:grid;grid-template-columns:200px 1fr;border-bottom:1px solid var(--rule);transition:background .25s}
-.exp-item:hover{background:var(--bg2)}
+.exp-item:hover{background:rgba(235,229,214,0.6)}
 .exp-item:last-child{border-bottom:none}
 .exp-l{padding:2.75rem 2.25rem;border-right:1px solid var(--rule2)}
 .exp-period{font-family:var(--mono);font-size:.55rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:.45rem}
@@ -330,8 +350,7 @@ section{position:relative;z-index:10;background:var(--bg)}
 .exp-role{font-family:var(--display);font-size:1.45rem;letter-spacing:.05em;color:var(--ink);margin-bottom:.85rem}
 .exp-desc{font-family:var(--serif);font-size:1rem;font-weight:300;color:var(--ink2);line-height:1.95}
 
-/* ─── SKILLS ─── */
-#skills{border-bottom:1px solid var(--rule2)}
+/* SKILLS */
 .skills-wrap{display:grid;grid-template-columns:repeat(3,1fr)}
 .sk-col{padding:2.75rem;border-right:1px solid var(--rule2)}
 .sk-col:last-child{border-right:none}
@@ -343,28 +362,44 @@ section{position:relative;z-index:10;background:var(--bg)}
 .sk-fill.learning{background:var(--amber)}
 .sk-col.in .sk-fill{width:var(--fill)}
 
-/* ─── CONTACT ─── */
-#contact{border-bottom:none}
+/* CONTACT */
 .contact-wrap{display:grid;grid-template-columns:1fr 380px;min-height:480px}
 .contact-l{padding:5rem 4.5rem;border-right:1px solid var(--rule2);display:flex;flex-direction:column;justify-content:center}
 .contact-h{font-family:var(--display);font-size:clamp(4rem,8.5vw,7rem);line-height:.86;letter-spacing:.03em;color:var(--ink);margin-bottom:2.5rem}
 .contact-h span{color:var(--accent);display:block}
 .contact-sub{font-family:var(--serif);font-size:1.08rem;font-weight:300;color:var(--ink2);line-height:1.95;max-width:440px}
-.contact-r{background:var(--bg2);display:flex;flex-direction:column}
+.contact-r{background:rgba(235,229,214,0.6);display:flex;flex-direction:column}
 .cl{flex:1;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;border-bottom:1px solid var(--rule);text-decoration:none;color:inherit;transition:background .15s}
 .cl:last-child{border-bottom:none}
-.cl:hover{background:var(--bg3)}
+.cl:hover{background:rgba(224,216,196,0.7)}
 .cl-lbl{font-family:var(--mono);font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);margin-bottom:.35rem}
 .cl-val{font-family:var(--serif);font-size:1.05rem;font-weight:300;color:var(--ink)}
 .cl-arr{font-family:var(--mono);font-size:.85rem;color:var(--accent)}
 
-footer{border-top:1px solid var(--rule2);padding:1.1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:var(--bg2)}
+footer{
+  position:relative;z-index:5;
+  border-top:1px solid var(--rule2);padding:1.1rem 2.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--panel);backdrop-filter:blur(var(--panel-blur));
+}
 footer p{font-family:var(--mono);font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
 
-/* ─── REVEAL ─── */
+/* REVEAL */
 .rev{opacity:0;transform:translateY(28px);transition:opacity .85s ease,transform .85s ease}
 .rev.in{opacity:1;transform:none}
 .rev.d1{transition-delay:.12s}.rev.d2{transition-delay:.24s}
+
+/* TICKER (within hero stat panel area) */
+.ticker{
+  position:relative;z-index:5;
+  border-top:1px solid var(--rule2);padding:.65rem 0;overflow:hidden;
+  background:var(--panel);backdrop-filter:blur(var(--panel-blur));
+}
+.ticker-track{display:flex;gap:3rem;white-space:nowrap;animation:tick 32s linear infinite}
+.ticker-track:hover{animation-play-state:paused}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ti{display:flex;align-items:center;gap:.65rem;flex-shrink:0;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3)}
+.ti-dot{width:3px;height:3px;border-radius:50%;background:var(--accent);flex-shrink:0}
 
 @media(max-width:960px){
   .nl{display:none}
@@ -374,6 +409,7 @@ footer p{font-family:var(--mono);font-size:.52rem;letter-spacing:.14em;text-tran
   .hero-r{flex-direction:row;flex-wrap:wrap;border-top:1px solid var(--rule2)}
   .h-stat{flex:1 1 45%;border-right:1px solid var(--rule2);padding:1.25rem}
   .h-stat-num{font-size:1.7rem}
+  .breath{height:30vh}
   .s-top{grid-template-columns:48px 1fr}.s-tag{display:none}
   .about-wrap{grid-template-columns:1fr}
   .about-body{padding:2.5rem 1.5rem;border-right:none}
@@ -391,8 +427,6 @@ footer p{font-family:var(--mono);font-size:.52rem;letter-spacing:.14em;text-tran
   .contact-wrap{grid-template-columns:1fr}
   .contact-l{border-right:none;padding:3rem 1.5rem}
   footer{flex-direction:column;gap:.5rem;text-align:center}
-  #intro-pin{height:auto}
-  .intro-sticky{position:relative;top:0;height:auto;padding:5rem 0}
 }
 </style>
 </head>
@@ -405,10 +439,22 @@ footer p{font-family:var(--mono);font-size:.52rem;letter-spacing:.14em;text-tran
   <div class="loader-pct" id="pct">00</div>
 </div>
 
-<!-- CUSTOM CURSOR -->
+<!-- CURSOR -->
 <div class="cursor-dot"></div>
 <div class="cursor-ring"></div>
 
+<!-- ═══ THE MOUNTAIN STAGE — fixed behind everything ═══ -->
+<div id="mountain-stage">
+  <div class="mtn-layer-back"></div>
+  <div class="mtn-layer-mid"></div>
+  <div class="mtn-layer-front"></div>
+  <div class="mtn-atm"></div>
+  <div class="mtn-sky"></div>
+  <div class="celestial" id="celestial"></div>
+  <div class="stars" id="stars"></div>
+</div>
+
+<!-- NAV -->
 <nav>
   <a href="#hero" class="nb">H<em>.</em>ADAMS</a>
   <ul class="nl">
@@ -424,16 +470,10 @@ footer p{font-family:var(--mono);font-size:.52rem;letter-spacing:.14em;text-tran
   </div>
 </nav>
 
-<section id="hero">
-  <div class="stage">
-    <div class="mtn-img"></div>
-    <div class="atmosphere"></div>
-    <div class="sky-overlay"></div>
-    <div class="celestial" id="celestial"></div>
-    <div class="stars" id="stars"></div>
-    <div class="hero-fade"></div>
-  </div>
+<main>
 
+<!-- HERO -->
+<section id="hero">
   <div class="hero-body">
     <div class="hero-l">
       <div class="h-eyebrow">Analyst &mdash; Denver, CO &mdash; Open to remote</div>
@@ -442,10 +482,9 @@ footer p{font-family:var(--mono);font-size:.52rem;letter-spacing:.14em;text-tran
         <span class="sur"><span class="word"><span>ADAMS</span></span></span>
       </h1>
       <p class="h-text">
-        Economics. Engineering. Eight projects that prove it.<br>
-        I've incubated deep-tech startups on a trading floor in Sydney<br>
-        and skied into places most people only see on maps.<br>
-        I show up ready. The models run. The work speaks.
+        Economics. Engineering. Eight projects, all functional.<br>
+        Sydney trading floor. Colorado backcountry.<br>
+        I run the model. I ship the work. I show up ready.
       </p>
       <div class="h-actions">
         <a href="#projects" class="btn btn-acc magnetic">View the work &rarr;</a>
@@ -455,13 +494,12 @@ footer p{font-family:var(--mono);font-size:.52rem;letter-spacing:.14em;text-tran
       </div>
     </div>
     <div class="hero-r">
-      <div class="h-stat"><div class="h-stat-idx">01 &mdash; Projects</div><div class="h-stat-num acc">08</div><div class="h-stat-label">Portfolio &mdash; all functional</div></div>
+      <div class="h-stat"><div class="h-stat-idx">01 &mdash; Projects</div><div class="h-stat-num acc">08</div><div class="h-stat-label">Live in the portfolio</div></div>
       <div class="h-stat"><div class="h-stat-idx">02 &mdash; Degree</div><div class="h-stat-num">B.S.</div><div class="h-stat-label">Economics &mdash; U of Oregon</div></div>
       <div class="h-stat"><div class="h-stat-idx">03 &mdash; Graduate</div><div class="h-stat-num">M.Eng.</div><div class="h-stat-label">CU Boulder &mdash; Eng. Mgmt</div></div>
       <div class="h-stat"><div class="h-stat-idx">04 &mdash; Experience</div><div class="h-stat-num">RFC</div><div class="h-stat-label">Ambrian &mdash; Sydney, AU</div></div>
     </div>
   </div>
-
   <div class="ticker">
     <div class="ticker-track">
       <div class="ti"><span class="ti-dot"></span>Monte Carlo Simulation</div><div class="ti"><span class="ti-dot"></span>Portfolio Risk Model</div><div class="ti"><span class="ti-dot"></span>Reverse DCF</div><div class="ti"><span class="ti-dot"></span>Comparable Company Analysis</div><div class="ti"><span class="ti-dot"></span>Supply Chain Forecast</div><div class="ti"><span class="ti-dot"></span>Clean Energy Markets</div><div class="ti"><span class="ti-dot"></span>Angrist &amp; Lavy Replication</div><div class="ti"><span class="ti-dot"></span>Current Conditions iOS</div>
@@ -470,34 +508,24 @@ footer p{font-family:var(--mono);font-size:.52rem;letter-spacing:.14em;text-tran
   </div>
 </section>
 
-<!-- ─── PINNED INTRO — scroll-driven word reveal ─── -->
-<section id="intro-pin">
-  <div class="intro-sticky">
-    <div class="intro-stage">
-      <div class="intro-eyebrow">— A statement of intent —</div>
-      <div class="intro-words" id="intro-words">
-        <span class="iw">I </span><span class="iw">build </span><span class="iw">things </span><span class="iw">that </span><span class="iw">work. </span><br>
-        <span class="iw">Models </span><span class="iw">that </span><span class="iw">run. </span><span class="iw">Tools </span><span class="iw">people </span><span class="iw">use. </span><br>
-        <span class="iw">Numbers </span><span class="iw">that </span><span class="iw">tell </span><span class="iw">the </span><span class="iw">truth.</span>
-      </div>
-      <div class="intro-progress" id="intro-progress">SCROLL &mdash; 00%</div>
-    </div>
+<!-- BREATH 1 -->
+<div class="breath">
+  <div>
+    <div class="breath-eyebrow">— A statement of intent —</div>
+    <div class="breath-content">BUILT TO RUN.<br>NOT TO IMPRESS.</div>
   </div>
-</section>
+</div>
 
-<section id="about">
-  <div class="s-top rev">
-    <div class="s-n">01</div>
-    <div class="s-h"><span class="reveal-text">ABOUT</span></div>
-    <div class="s-tag">Henry_Adams.bio</div>
-  </div>
+<!-- ABOUT -->
+<section id="about" class="section-panel">
+  <div class="s-top rev"><div class="s-n">01</div><div class="s-h"><span class="reveal-text">ABOUT</span></div><div class="s-tag">Henry_Adams.bio</div></div>
   <div class="about-wrap">
     <div class="about-body rev">
-      <p>I'm an economics graduate from the University of Oregon — minor in entrepreneurship — currently completing a <strong>Master of Engineering in Engineering Management at CU Boulder</strong> through the Lockheed Martin Engineering Management Program.</p>
-      <p>Before grad school I was at <strong>RFC Ambrian in Sydney</strong>, deep inside a clean energy and deep-tech startup incubator. I built ecosystem frameworks, sourced and evaluated startups, and shaped the full incubation pipeline from formation through graduation. Real work. Real stakes.</p>
-      <div class="pull-quote">EIGHT PROJECTS.<br>ZERO EXCUSES.</div>
-      <p>The models on this site span quant finance, ops, energy markets, and product — because the roles I'm targeting require that range. Everything here is functional, documented, and deployed. Not a mock-up. Not a slide deck.</p>
-      <p>Outside of work I race alpine ski competitively and spend a lot of time in Colorado's backcountry. I know how to read terrain, commit to a line, and execute under pressure. That transfers.</p>
+      <p>I'm an economics graduate from the <strong>University of Oregon</strong> (B.S. 2025, minor in entrepreneurship), now in the <strong>Lockheed Martin Engineering Management Program at CU Boulder</strong> for my M.Eng.</p>
+      <p>Before grad school I worked inside <strong>RFC Ambrian's clean energy and deep-tech incubator in Sydney</strong>. Sourced startups. Built ecosystem frameworks. Shaped the full pipeline from formation to graduation. Real money. Real founders. Real stakes.</p>
+      <div class="pull-quote">EIGHT PROJECTS.<br>EVERY ONE SHIPS.</div>
+      <p>The work on this site is functional, documented, and live. Quant finance, ops, energy markets, product. Not a slide deck. Not a mock-up. <strong>Code that runs.</strong></p>
+      <p>I race alpine ski. I move in the backcountry. I read terrain, commit to a line, execute under pressure — and that doesn't switch off when I leave the mountain.</p>
     </div>
     <div class="about-side rev d1">
       <div class="as-row"><div class="as-lbl">Education</div><div class="as-val"><strong>M.Eng. Engineering Management</strong>CU Boulder &middot; 2026&ndash;2028<br>Lockheed Martin Program</div></div>
@@ -508,32 +536,55 @@ footer p{font-family:var(--mono);font-size:.52rem;letter-spacing:.14em;text-tran
   </div>
 </section>
 
-<section id="projects">
-  <div class="s-top rev">
-    <div class="s-n">02</div>
-    <div class="s-h"><span class="reveal-text">PROJECTS</span></div>
-    <div class="s-tag">Click to dive deeper</div>
+<!-- BREATH 2 -->
+<div class="breath">
+  <div>
+    <div class="breath-eyebrow">— The work itself —</div>
+    <div class="breath-content">EIGHT PROJECTS.<br>EVERY ONE LIVE.</div>
   </div>
+</div>
+
+<!-- PROJECTS -->
+<section id="projects" class="section-panel">
+  <div class="s-top rev"><div class="s-n">02</div><div class="s-h"><span class="reveal-text">PROJECTS</span></div><div class="s-tag">Click any card to dive in</div></div>
   <div class="proj-grid">
-    <a href="projects/monte-carlo.html" class="pc rev"><div class="pc-idx">01 &mdash; Quant Finance</div><div class="pc-title">MONTE CARLO<br>SIMULATOR</div><div class="pc-desc">1,000&ndash;10,000 equity price paths via geometric Brownian motion. Value at Risk, expected return, worst-case drawdown, full return distribution. Live interactive tool.</div><div class="pc-tags"><span class="pc-tag">GBM</span><span class="pc-tag">VaR</span><span class="pc-tag">3D</span><span class="pc-tag">Risk</span></div><div class="pc-status live">View project &rarr;</div><div class="pc-preview">Open</div></a>
-    <a href="projects/portfolio-risk.html" class="pc rev d1"><div class="pc-idx">02 &mdash; Portfolio Risk</div><div class="pc-title">PORTFOLIO<br>RISK MODEL</div><div class="pc-desc">Return, volatility, correlation, beta, Sharpe ratio, max drawdown across a multi-asset portfolio. Built the way asset management professionals actually use it.</div><div class="pc-tags"><span class="pc-tag">Sharpe</span><span class="pc-tag">Beta</span><span class="pc-tag">Drawdown</span></div><div class="pc-status wip">In progress</div><div class="pc-preview">Open</div></a>
-    <a href="projects/reverse-dcf.html" class="pc rev"><div class="pc-idx">03 &mdash; Valuation</div><div class="pc-title">REVERSE<br>DCF MODEL</div><div class="pc-desc">What growth rate must a company hit to justify its price? Revenue CAGR, FCF margin, WACC, terminal growth, implied upside/downside. Valuation made testable.</div><div class="pc-tags"><span class="pc-tag">DCF</span><span class="pc-tag">WACC</span><span class="pc-tag">FCF</span></div><div class="pc-status wip">In progress</div><div class="pc-preview">Open</div></a>
-    <a href="projects/comparable-company-analysis.html" class="pc rev d1"><div class="pc-idx">04 &mdash; Peer Benchmarking</div><div class="pc-title">COMPARABLE<br>COMPANY ANALYSIS</div><div class="pc-desc">EV/Revenue, EV/EBITDA, P/E, FCF yield across 5&ndash;10 public peers. Peer-group medians, percentile ranges, premium/discount analysis. Pitch-book ready.</div><div class="pc-tags"><span class="pc-tag">Comps</span><span class="pc-tag">EV/EBITDA</span><span class="pc-tag">IB</span></div><div class="pc-status wip">In progress</div><div class="pc-preview">Open</div></a>
-    <a href="projects/supply-chain-forecast.html" class="pc rev"><div class="pc-idx">05 &mdash; Operations</div><div class="pc-title">SUPPLY CHAIN<br>DEMAND FORECAST</div><div class="pc-desc">SKU-level demand variability, reorder points, safety stock, stockout risk across scenarios. Built to demonstrate ops and supply chain analyst competency.</div><div class="pc-tags"><span class="pc-tag">Supply Chain</span><span class="pc-tag">Forecast</span><span class="pc-tag">Sim</span></div><div class="pc-status wip">In progress</div><div class="pc-preview">Open</div></a>
-    <a href="projects/clean-energy.html" class="pc rev d1"><div class="pc-idx">06 &mdash; Energy Markets</div><div class="pc-title">CLEAN ENERGY<br>MARKET ANALYSIS</div><div class="pc-desc">Interactive visualization on real NREL and EIA datasets. Renewable capacity growth, cost curves, regional deployment. Informed directly by RFC Ambrian incubator work.</div><div class="pc-tags"><span class="pc-tag">NREL</span><span class="pc-tag">EIA</span><span class="pc-tag">D3.js</span></div><div class="pc-status wip">In progress</div><div class="pc-preview">Open</div></a>
-    <a href="projects/angrist-lavy.html" class="pc rev"><div class="pc-idx">07 &mdash; Econ Research</div><div class="pc-title">ANGRIST &amp; LAVY<br>REPLICATION</div><div class="pc-desc">Regression discontinuity replication of the landmark 1999 class-size study in R. Clean code, documented outputs, written analysis of what the data shows — and where it breaks.</div><div class="pc-tags"><span class="pc-tag">R</span><span class="pc-tag">RDD</span><span class="pc-tag">Econometrics</span></div><div class="pc-status wip">In progress</div><div class="pc-preview">Open</div></a>
-    <a href="projects/current-conditions.html" class="pc rev d1"><div class="pc-idx">08 &mdash; Product / Mobile</div><div class="pc-title">CURRENT<br>CONDITIONS</div><div class="pc-desc">iOS platform for technical outdoor activities — skiing, mountaineering, hiking. Real-time summit and route conditions. Sign in with Apple, Google auth, persistent login.</div><div class="pc-tags"><span class="pc-tag">iOS</span><span class="pc-tag">Swift</span><span class="pc-tag">Firebase</span></div><div class="pc-status wip">In progress</div><div class="pc-preview">Open</div></a>
+    <a href="projects/monte-carlo.html" class="pc rev"><div class="pc-idx">01 &mdash; Quant Finance</div><div class="pc-title">MONTE CARLO<br>SIMULATOR</div><div class="pc-desc">Ten thousand possible futures, rendered in 3D. Geometric Brownian motion paths, Value at Risk, full return distribution. Drag to rotate. Live.</div><div class="pc-tags"><span class="pc-tag">GBM</span><span class="pc-tag">VaR</span><span class="pc-tag">3D</span><span class="pc-tag">Risk</span></div><div class="pc-status live">Open project &rarr;</div><div class="pc-preview">Open</div></a>
+    <a href="projects/portfolio-risk.html" class="pc rev d1"><div class="pc-idx">02 &mdash; Portfolio Risk</div><div class="pc-title">PORTFOLIO<br>RISK MODEL</div><div class="pc-desc">Sharpe, beta, max drawdown, correlation. Multi-asset risk decomposition built the way professionals actually use it.</div><div class="pc-tags"><span class="pc-tag">Sharpe</span><span class="pc-tag">Beta</span><span class="pc-tag">Drawdown</span></div><div class="pc-status wip">In progress</div><div class="pc-preview">Open</div></a>
+    <a href="projects/reverse-dcf.html" class="pc rev"><div class="pc-idx">03 &mdash; Valuation</div><div class="pc-title">REVERSE<br>DCF MODEL</div><div class="pc-desc">Don't ask what it's worth. Ask what growth rate the market is pricing in. Valuation made falsifiable.</div><div class="pc-tags"><span class="pc-tag">DCF</span><span class="pc-tag">WACC</span><span class="pc-tag">FCF</span></div><div class="pc-status wip">In progress</div><div class="pc-preview">Open</div></a>
+    <a href="projects/comparable-company-analysis.html" class="pc rev d1"><div class="pc-idx">04 &mdash; Peer Benchmarking</div><div class="pc-title">COMPARABLE<br>COMPANY ANALYSIS</div><div class="pc-desc">EV/Revenue, EV/EBITDA, P/E, FCF yield against 5–10 peers. Medians, percentiles, premium/discount. Pitch-book ready.</div><div class="pc-tags"><span class="pc-tag">Comps</span><span class="pc-tag">EV/EBITDA</span><span class="pc-tag">IB</span></div><div class="pc-status wip">In progress</div><div class="pc-preview">Open</div></a>
+    <a href="projects/supply-chain-forecast.html" class="pc rev"><div class="pc-idx">05 &mdash; Operations</div><div class="pc-title">SUPPLY CHAIN<br>DEMAND FORECAST</div><div class="pc-desc">SKU-level demand variability. Reorder points. Stockout probability. Inventory policy turned into testable numbers.</div><div class="pc-tags"><span class="pc-tag">Supply Chain</span><span class="pc-tag">Forecast</span><span class="pc-tag">Sim</span></div><div class="pc-status wip">In progress</div><div class="pc-preview">Open</div></a>
+    <a href="projects/clean-energy.html" class="pc rev d1"><div class="pc-idx">06 &mdash; Energy Markets</div><div class="pc-title">CLEAN ENERGY<br>MARKET ANALYSIS</div><div class="pc-desc">Real NREL and EIA data. Renewable buildout, technology cost curves, regional patterns. The transition, mapped.</div><div class="pc-tags"><span class="pc-tag">NREL</span><span class="pc-tag">EIA</span><span class="pc-tag">D3.js</span></div><div class="pc-status wip">In progress</div><div class="pc-preview">Open</div></a>
+    <a href="projects/angrist-lavy.html" class="pc rev"><div class="pc-idx">07 &mdash; Econ Research</div><div class="pc-title">ANGRIST &amp; LAVY<br>REPLICATION</div><div class="pc-desc">The 1999 class-size study, replicated in R. Regression discontinuity. Bandwidth slider. Where the identification breaks.</div><div class="pc-tags"><span class="pc-tag">R</span><span class="pc-tag">RDD</span><span class="pc-tag">Econometrics</span></div><div class="pc-status wip">In progress</div><div class="pc-preview">Open</div></a>
+    <a href="projects/current-conditions.html" class="pc rev d1"><div class="pc-idx">08 &mdash; Product / Mobile</div><div class="pc-title">CURRENT<br>CONDITIONS</div><div class="pc-desc">iOS for technical outdoor activities. Real-time route conditions. Built native. Apple, Google, email auth.</div><div class="pc-tags"><span class="pc-tag">iOS</span><span class="pc-tag">Swift</span><span class="pc-tag">Firebase</span></div><div class="pc-status wip">In progress</div><div class="pc-preview">Open</div></a>
   </div>
 </section>
 
-<section id="experience">
+<!-- BREATH 3 -->
+<div class="breath">
+  <div>
+    <div class="breath-eyebrow">— Where I've been —</div>
+    <div class="breath-content">SYDNEY.<br>EUGENE. DENVER.</div>
+  </div>
+</div>
+
+<!-- EXPERIENCE -->
+<section id="experience" class="section-panel">
   <div class="s-top rev"><div class="s-n">03</div><div class="s-h"><span class="reveal-text">EXPERIENCE</span></div><div class="s-tag">Professional_record.log</div></div>
-  <div class="exp-item rev"><div class="exp-l"><div class="exp-period">2024 &mdash; 2025</div><div class="exp-co">RFC Ambrian<br>Sydney, AU</div></div><div class="exp-r"><div class="exp-role">CLEAN ENERGY INCUBATOR &mdash; ANALYST</div><div class="exp-desc">Worked inside a clean energy and deep-tech startup incubator at RFC Ambrian's Sydney office. Built ecosystem frameworks, sourced and evaluated early-stage startups, and shaped the full incubation pipeline from formation and sourcing through onboarding, incubation, validation, and graduation.</div></div></div>
-  <div class="exp-item rev"><div class="exp-l"><div class="exp-period">2023 &mdash; 2025</div><div class="exp-co">U of Oregon<br>Collegiate Ski Team</div></div><div class="exp-r"><div class="exp-role">PRESIDENT &mdash; COLLEGIATE SKI TEAM</div><div class="exp-desc">Led a competitive team of ~20 athletes over two years. Coordinated with USCSA for racing, travel, and eligibility. Handled budgeting, communications, and logistics. Leading people who don't have to follow you is the only kind of leadership that matters.</div></div></div>
-  <div class="exp-item rev"><div class="exp-l"><div class="exp-period">2021 &mdash; 2025</div><div class="exp-co">University of Oregon<br>Eugene, OR</div></div><div class="exp-r"><div class="exp-role">B.S. ECONOMICS &mdash; MINOR: ENTREPRENEURSHIP</div><div class="exp-desc">Econometrics and empirical methods in R. Policy analysis, comparative political economy, and quantitative modeling. Original research replicating Angrist &amp; Lavy (1999). Policy case studies on Brexit and Las Vegas economic diversification.</div></div></div>
+  <div class="exp-item rev"><div class="exp-l"><div class="exp-period">2024 &mdash; 2025</div><div class="exp-co">RFC Ambrian<br>Sydney, AU</div></div><div class="exp-r"><div class="exp-role">CLEAN ENERGY INCUBATOR &mdash; ANALYST</div><div class="exp-desc">Sourced and evaluated early-stage clean energy and deep-tech startups inside RFC Ambrian's Sydney incubator. Built ecosystem frameworks. Shaped the full pipeline — formation, sourcing, onboarding, validation, graduation. Hands-on with deal flow, founder diligence, and investment thesis.</div></div></div>
+  <div class="exp-item rev"><div class="exp-l"><div class="exp-period">2023 &mdash; 2025</div><div class="exp-co">U of Oregon<br>Collegiate Ski Team</div></div><div class="exp-r"><div class="exp-role">PRESIDENT &mdash; COLLEGIATE SKI TEAM</div><div class="exp-desc">Led a team of ~20 athletes for two years. USCSA coordination. Budget. Travel logistics. Race weekends. Leading volunteers is the only test of leadership that matters — they don't have to listen.</div></div></div>
+  <div class="exp-item rev"><div class="exp-l"><div class="exp-period">2021 &mdash; 2025</div><div class="exp-co">University of Oregon<br>Eugene, OR</div></div><div class="exp-r"><div class="exp-role">B.S. ECONOMICS &mdash; MINOR: ENTREPRENEURSHIP</div><div class="exp-desc">Econometrics in R. Empirical methods. Quantitative modeling. Original research replicating Angrist &amp; Lavy (1999). Policy briefs on Brexit, Las Vegas economic diversification. The foundation everything else runs on.</div></div></div>
 </section>
 
-<section id="skills">
+<!-- BREATH 4 -->
+<div class="breath">
+  <div>
+    <div class="breath-eyebrow">— What I bring —</div>
+    <div class="breath-content">FINANCE. CODE.<br>SOMETHING ELSE.</div>
+  </div>
+</div>
+
+<!-- SKILLS -->
+<section id="skills" class="section-panel">
   <div class="s-top rev"><div class="s-n">04</div><div class="s-h"><span class="reveal-text">SKILLS</span></div><div class="s-tag">Competency_matrix.csv</div></div>
   <div class="skills-wrap">
     <div class="sk-col rev"><div class="sk-head">Finance &amp; Modeling</div>
@@ -560,12 +611,21 @@ footer p{font-family:var(--mono);font-size:.52rem;letter-spacing:.14em;text-tran
   </div>
 </section>
 
-<section id="contact">
+<!-- BREATH 5 -->
+<div class="breath">
+  <div>
+    <div class="breath-eyebrow">— Last stop —</div>
+    <div class="breath-content">YOUR MOVE.</div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<section id="contact" class="section-panel">
   <div class="s-top rev"><div class="s-n">05</div><div class="s-h"><span class="reveal-text">CONTACT</span></div><div class="s-tag">Initiate_contact.exe</div></div>
   <div class="contact-wrap">
     <div class="contact-l rev">
       <div class="contact-h">LET'S<span>TALK.</span></div>
-      <p class="contact-sub">Actively looking for analyst, coordinator, operations, and finance roles in Denver &mdash; open to remote or relocation for the right opportunity. If you're building something serious and need someone who can model it, run it, and make it work &mdash; reach out.</p>
+      <p class="contact-sub">Looking for analyst, ops, or finance work — Denver first, remote close behind, relocation for the right shop. If you're building something serious and need someone who'll model it, run it, ship it — reach out.</p>
     </div>
     <div class="contact-r rev d1">
       <a href="mailto:henry@example.com" class="cl"><div><div class="cl-lbl">Email</div><div class="cl-val">henry@example.com</div></div><div class="cl-arr">&rarr;</div></a>
@@ -575,6 +635,8 @@ footer p{font-family:var(--mono);font-size:.52rem;letter-spacing:.14em;text-tran
     </div>
   </div>
 </section>
+
+</main>
 
 <footer><p>Henry Adams &mdash; &copy; 2025</p><p>Built from scratch. No templates.</p></footer>
 
@@ -588,7 +650,6 @@ const pInt = setInterval(()=>{
   if(p >= 100){p=100;clearInterval(pInt)}
   pct.textContent = String(Math.floor(p)).padStart(2,'0');
 }, 100);
-
 window.addEventListener('load', ()=>{
   setTimeout(()=>{
     loader.classList.add('gone');
@@ -597,25 +658,14 @@ window.addEventListener('load', ()=>{
   }, 1800);
 });
 
-/* ═══ CUSTOM CURSOR ═══ */
-const cDot = document.querySelector('.cursor-dot');
-const cRing = document.querySelector('.cursor-ring');
+/* CURSOR */
+const cDot=document.querySelector('.cursor-dot'),cRing=document.querySelector('.cursor-ring');
 let mx=0,my=0,rx=0,ry=0;
-window.addEventListener('mousemove', e=>{mx=e.clientX;my=e.clientY;cDot.style.left=mx+'px';cDot.style.top=my+'px'});
-function tick(){
-  rx += (mx - rx) * .15;
-  ry += (my - ry) * .15;
-  cRing.style.left = rx + 'px';
-  cRing.style.top = ry + 'px';
-  requestAnimationFrame(tick);
-}
-tick();
-document.querySelectorAll('a, button, .pc, .magnetic, .cl').forEach(el=>{
-  el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
-  el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
-});
+window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cDot.style.left=mx+'px';cDot.style.top=my+'px'});
+function tickC(){rx+=(mx-rx)*.15;ry+=(my-ry)*.15;cRing.style.left=rx+'px';cRing.style.top=ry+'px';requestAnimationFrame(tickC)}tickC();
+document.querySelectorAll('a,button,.pc,.magnetic,.cl').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'))});
 
-/* ═══ MAGNETIC BUTTONS ═══ */
+/* MAGNETIC */
 document.querySelectorAll('.magnetic').forEach(btn=>{
   btn.addEventListener('mousemove', e=>{
     const r = btn.getBoundingClientRect();
@@ -626,7 +676,7 @@ document.querySelectorAll('.magnetic').forEach(btn=>{
   btn.addEventListener('mouseleave', ()=>{btn.style.transform = ''});
 });
 
-/* ═══ STARS ═══ */
+/* STARS */
 const starsEl = document.getElementById('stars');
 for(let i=0;i<60;i++){
   const s = document.createElement('div');
@@ -638,9 +688,9 @@ for(let i=0;i<60;i++){
   starsEl.appendChild(s);
 }
 
-/* ═══ DAY/NIGHT CYCLE ═══ */
+/* ═══ DAY/NIGHT KEYFRAMES ═══ */
 const TIME_KEYFRAMES = [
-  { t:0,    name:'Dawn',
+  { t:0, name:'Dawn',
     palette:{bg:[239,228,210],bg2:[230,216,192],bg3:[220,203,174],ink:[42,34,29],ink2:[90,77,66],ink3:[150,136,115],ink4:[201,188,166],accent:[196,74,42],amber:[176,112,32],sage:[122,138,106]},
     photo:{brightness:.85,saturate:1.1,contrast:1.05,hue:-3},
     atm:{color:'rgba(255,180,140,.3)',blend:'soft-light',opacity:.7},
@@ -654,7 +704,7 @@ const TIME_KEYFRAMES = [
     sky:{grad:'linear-gradient(to bottom,rgba(90,139,192,.65) 0%,rgba(168,200,224,.45) 50%,rgba(224,216,184,.2) 100%)',opacity:.85},
     cel:{x:80,y:25,color:'radial-gradient(circle,rgba(255,250,230,1) 0%,rgba(255,225,170,.6) 35%,rgba(245,200,130,0) 70%)',size:130},
     stars:0},
-  { t:.5,  name:'Dusk',
+  { t:.5, name:'Dusk',
     palette:{bg:[61,36,25],bg2:[74,45,31],bg3:[88,54,38],ink:[245,230,208],ink2:[212,184,148],ink3:[160,136,102],ink4:[107,86,64],accent:[242,144,64],amber:[232,164,64],sage:[138,168,136]},
     photo:{brightness:.7,saturate:1.25,contrast:1.1,hue:8},
     atm:{color:'rgba(255,120,60,.5)',blend:'overlay',opacity:.85},
@@ -707,13 +757,16 @@ function getInterpolated(t){
 }
 
 const root = document.documentElement;
-const mtnImg = document.querySelector('.mtn-img');
-const atmEl = document.querySelector('.atmosphere');
-const skyEl = document.querySelector('.sky-overlay');
+const stage = document.getElementById('mountain-stage');
+const layerBack = document.querySelector('.mtn-layer-back');
+const layerMid = document.querySelector('.mtn-layer-mid');
+const layerFront = document.querySelector('.mtn-layer-front');
+const atmEl = document.querySelector('.mtn-atm');
+const skyEl = document.querySelector('.mtn-sky');
 const celEl = document.getElementById('celestial');
 const timeLabel = document.getElementById('time-label');
 
-function applyState(s){
+function applyTime(s){
   root.style.setProperty('--bg',rgbStr(s.palette.bg));
   root.style.setProperty('--bg2',rgbStr(s.palette.bg2));
   root.style.setProperty('--bg3',rgbStr(s.palette.bg3));
@@ -726,10 +779,17 @@ function applyState(s){
   root.style.setProperty('--accent',rgbStr(s.palette.accent));
   root.style.setProperty('--amber',rgbStr(s.palette.amber));
   root.style.setProperty('--sage',rgbStr(s.palette.sage));
-  mtnImg.style.setProperty('--mtn-brightness',s.photo.brightness);
-  mtnImg.style.setProperty('--mtn-saturate',s.photo.saturate);
-  mtnImg.style.setProperty('--mtn-contrast',s.photo.contrast);
-  mtnImg.style.setProperty('--mtn-hue',s.photo.hue+'deg');
+
+  // Panel opacity adapts to night vs day for legibility
+  const isDark = s.palette.bg[0] < 100;
+  root.style.setProperty('--panel', isDark ? 'rgba(20,26,44,0.88)' : 'rgba(245,241,234,0.92)');
+
+  // Apply photo filters to all three layers
+  root.style.setProperty('--mtn-brightness', s.photo.brightness);
+  root.style.setProperty('--mtn-saturate', s.photo.saturate);
+  root.style.setProperty('--mtn-contrast', s.photo.contrast);
+  root.style.setProperty('--mtn-hue', s.photo.hue+'deg');
+
   atmEl.style.background = s.atm.mix<.5?s.atm.color:s.atm.colorB;
   atmEl.style.mixBlendMode = s.atm.blend;
   atmEl.style.opacity = s.atm.opacity;
@@ -744,45 +804,55 @@ function applyState(s){
   if(timeLabel) timeLabel.textContent = s.name;
 }
 
-/* ═══ PINNED INTRO — scroll-driven word reveal ═══ */
-const introPin = document.getElementById('intro-pin');
-const introWords = document.querySelectorAll('#intro-words .iw');
-const introProgress = document.getElementById('intro-progress');
-const mtnLayer = document.querySelector('.mtn-img');
-
+/* ═══ THE PARALLAX ENGINE ═══
+   Three depth layers move at different speeds based on scroll.
+   Plus a "camera move" — overall zoom and pan tied to scroll position
+   that creates the cinematic feel of moving through the scene.
+*/
 let ticking = false;
 function updateScroll(){
   const scrollTop = window.scrollY;
-  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-  const progress = docHeight > 0 ? Math.min(1, scrollTop / docHeight) : 0;
-  applyState(getInterpolated(progress));
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docH > 0 ? Math.min(1, scrollTop / docH) : 0;
 
-  // Hero parallax — mountain shifts down slightly as you scroll past hero
-  const heroH = window.innerHeight;
-  const heroProg = Math.min(1, scrollTop / heroH);
-  if(mtnLayer) mtnLayer.style.setProperty('--mtn-y', (heroProg * 60) + 'px');
+  // Day/night cycle
+  applyTime(getInterpolated(progress));
 
-  // Pinned intro animation
-  if(introPin){
-    const pinTop = introPin.offsetTop;
-    const pinH = introPin.offsetHeight;
-    const pinProg = Math.max(0, Math.min(1, (scrollTop - pinTop) / (pinH - window.innerHeight)));
-    const total = introWords.length;
-    const activeIdx = Math.floor(pinProg * total);
-    introWords.forEach((w,i)=>{
-      w.classList.remove('hot','dim');
-      if(i < activeIdx){ w.classList.add('hot'); }
-      else if(i > activeIdx + 1){ w.classList.add('dim'); }
-    });
-    if(introProgress) introProgress.textContent = 'SCROLL — ' + String(Math.round(pinProg*100)).padStart(2,'0') + '%';
-  }
+  // 2.5D PARALLAX — each layer moves at a different speed
+  // Back layer moves slowest, front fastest
+  const backY = scrollTop * -0.08;   // sky, slowest
+  const midY = scrollTop * -0.18;    // mid ridges
+  const frontY = scrollTop * -0.32;  // front peaks, fastest (negative = moves up as we scroll)
+
+  root.style.setProperty('--mtn-back-y', backY + 'px');
+  root.style.setProperty('--mtn-mid-y', midY + 'px');
+  root.style.setProperty('--mtn-front-y', frontY + 'px');
+
+  // CAMERA MOVE — scale shifts as we scroll, subtle zoom-in feel
+  // Hero (0-15%): wide shot, no scale change
+  // 15-50%: gradual zoom from 1.0 to 1.15 on front layer
+  // 50-100%: continue subtle drift
+  const camPhase = progress;
+  const frontScale = 1 + (camPhase * 0.18);    // zooms in 18% over scroll
+  const midScale = 1.08 + (camPhase * 0.10);   // zooms in 10%
+  const backScale = 1.15 + (camPhase * 0.06);  // barely zooms
+
+  root.style.setProperty('--mtn-front-scale', frontScale);
+  root.style.setProperty('--mtn-mid-scale', midScale);
+  root.style.setProperty('--mtn-back-scale', backScale);
+
+  // Subtle blur shift — at certain phases, reduce blur on back to "focus"
+  // At dusk (around 50%), pull focus toward foreground (more blur on back)
+  const blurPhase = Math.abs(progress - 0.5) * 2;  // 0 at dusk, 1 at start/end
+  const blurBack = 6 + (1 - blurPhase) * 6;        // 12px at dusk, 6px at edges
+  root.style.setProperty('--mtn-blur-back', blurBack + 'px');
 
   ticking = false;
 }
 window.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(updateScroll);ticking=true}},{passive:true});
 updateScroll();
 
-/* ═══ REVEALS ═══ */
+/* REVEALS */
 const revIo = new IntersectionObserver(entries=>{
   entries.forEach(e=>{
     if(e.isIntersecting){
